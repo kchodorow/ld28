@@ -17,6 +17,7 @@ trolls.Troll = function() {
     this.controlled_ = false;
     this.direction_ = new goog.math.Coordinate(0, 0);
     this.facing_ = new goog.math.Coordinate(1, 0);
+    this.move = goog.bind(trolls.Mixins.moveTowards, this);
 
     this.setSize(40, 40).setFill(trolls.resources.getTroll());
 };
@@ -47,7 +48,8 @@ trolls.Troll.prototype.getLocation = function() {
 };
 
 trolls.Troll.prototype.attack = function() {
-    trolls.village.smooshed(this.loc_.x+this.facing_.x, this.loc_.y+this.facing_.y);
+    this.attacking_ = true;
+    this.goal_.smoosh();
 };
 
 trolls.Troll.prototype.choose = function() {
@@ -61,6 +63,14 @@ trolls.Troll.prototype.addPower = function(power) {
     this.powers_.push(power);
 };
 
+trolls.Troll.prototype.distanceToGoal = function() {
+    if (!this.goal_) {
+	return WIDTH*HEIGHT;
+    }
+    return goog.math.Coordinate.distance(
+	this.getPosition(), this.goal_.getPosition());
+};
+
 trolls.Troll.prototype.step = function(dt) {
     if (this.controlled_) {
 	var distance = trolls.Troll.SPEED * dt;
@@ -70,5 +80,13 @@ trolls.Troll.prototype.step = function(dt) {
 	return;
     }
 
-    goog.bind(trolls.Mixins.moveTowards, this, dt)();
+    if (this.attacking_) {
+	return;
+    }
+
+    this.move(dt);
+
+    if (this.distanceToGoal() < LEN) {
+	this.attack();
+    }
 };

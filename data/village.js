@@ -100,6 +100,8 @@ trolls.data.Villager = function(box) {
     this.setSize(15, 15).setFill(trolls.resources.getVillager())
 	.setPosition(pos_x*LEN, pos_y*LEN);
     this.goal_ = null;
+
+    this.move = goog.bind(trolls.Mixins.moveTowards, this);
 };
 
 goog.inherits(trolls.data.Villager, lime.Sprite);
@@ -108,5 +110,5 @@ goog.inherits(trolls.data.Villager, lime.Sprite);
 trolls.data.Villager.SPEED = .15;
 
 trolls.data.Villager.prototype.step = function(dt) {
-    goog.bind(trolls.Mixins.moveTowards, this, dt)();
+    this.move(dt);
 };

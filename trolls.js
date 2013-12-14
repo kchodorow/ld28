@@ -37,7 +37,7 @@ trolls.start = function(){
 
     trolls.controller = new trolls.Controller(scene);
 
-    var village_size = new goog.math.Size(20, 20);
+    var village_size = new goog.math.Size(20, 15);
     var village = new trolls.data.Village(village_size);
     trolls.controller.addVillage(village);
     layer.appendChild(village);
