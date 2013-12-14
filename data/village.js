@@ -2,8 +2,6 @@ goog.provide('trolls.data.Village');
 
 goog.require('lib');
 
-var LEN = 44;
-
 // Create a random village.
 trolls.data.Village = function(size) {
     lime.Sprite.call(this);

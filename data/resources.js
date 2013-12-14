@@ -11,3 +11,11 @@ trolls.data.Resources.prototype.getHut = function() {
 trolls.data.Resources.prototype.getGrass = function() {
     return '#070';
 };
+
+trolls.data.Resources.prototype.getTroll = function() {
+    return '#ddd';
+};
+
+trolls.data.Resources.prototype.getMarker = function() {
+    return '#ddd';
+};
