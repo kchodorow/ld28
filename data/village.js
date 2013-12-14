@@ -56,6 +56,10 @@ trolls.data.Village.prototype.addVillagers = function() {
     }
 };
 
+trolls.data.Village.prototype.getVillagers = function() {
+    return this.villagers_;
+};
+
 trolls.data.Village.prototype.smooshed = function(pos) {
     if (this.board_[pos.x][pos.y].id != "Grass") {
 	this.board_[pos.x][pos.y].smoosh();
@@ -89,6 +93,26 @@ trolls.data.Villager = function(box) {
     this.loc_ = new goog.math.Coordinate(pos_x, pos_y);
     this.setSize(15, 15).setFill(trolls.resources.getVillager())
 	.setPosition(pos_x*LEN, pos_y*LEN);
+    this.goal_ = null;
 };
 
 goog.inherits(trolls.data.Villager, lime.Sprite);
+
+// px/ms
+trolls.data.Villager.SPEED = .15;
+
+trolls.data.Villager.prototype.step = function(dt) {
+    if (this.goal_ == null) {
+	this.goal_ = trolls.controller.findTarget(this);
+	if (this.goal_ == null) {
+	    throw "that's weird";
+	}
+    }
+
+    var distance = dt*trolls.data.Villager.SPEED;
+    var pos = this.getPosition();
+    var troll_pos = this.goal_.getPosition();
+    var vec = new goog.math.Vec2(troll_pos.x - pos.x, troll_pos.y - pos.y);
+    vec = vec.normalize().scale(Math.sqrt(distance));
+    this.setPosition(pos.x+vec.x, pos.y+vec.y);
+};

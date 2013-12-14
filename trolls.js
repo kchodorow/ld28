@@ -34,20 +34,22 @@ trolls.start = function(){
     var scene = new lime.Scene();
     var layer = new lime.Layer().setSize(WIDTH, HEIGHT).setAnchorPoint(.5, .5)
 	.setPosition(WIDTH/2, HEIGHT/2);
-    var controller = new trolls.Controller(scene);
+
+    trolls.controller = new trolls.Controller(scene);
 
     var village_size = new goog.math.Size(20, 20);
     var village = new trolls.data.Village(village_size);
+    trolls.controller.addVillage(village);
     layer.appendChild(village);
 
     var NUM_TROLLS = 5;
     for (var i = 0; i < NUM_TROLLS; i++) {
 	var troll = new trolls.Troll();
-	controller.addTroll(troll);
+	trolls.controller.addTroll(troll);
 	troll.setStartingPos(village_size);
 	layer.appendChild(troll);
 	if (i == 0) {
-	    controller.choose(troll);
+	    trolls.controller.choose(troll);
 	}
     }
 

@@ -42,14 +42,49 @@ trolls.Controller.prototype.keyup = function(controller, e) {
     controller.controlled_.setDirection(0, 0);
 };
 
-trolls.Controller.prototype.addTroll = function(troll) {
-    this.actors_.push(troll);
-    this.trolls_.push(troll);
+trolls.Controller.prototype.findTarget = function(actor) {
+    if (actor.id == 'Troll') {
+	// Check a 3x3 box "in front" of the troll
+	var loc = actor.getLocation();
+	var box = new goog.math.Box(
+	    (loc.y-2)*LEN, (loc.x+2)*LEN, (loc.y+2)*LEN, (loc.x-2)*LEN);
+	var villagers = this.village_.getVillagers();
+	for (var i = 0; i < villagers.length; ++i) {
+	    if (box.contains(villagers[i].getPosition())) {
+		return villagers[i];
+	    }
+	}
+    } else {
+	var min_distance = WIDTH*HEIGHT;
+	var troll = null;
+	for (var i = 0; i < this.trolls_.length; ++i) {
+	    var distance = goog.math.Coordinate.distance(
+		this.trolls_[i].getPosition(), actor.getPosition());
+	    if (distance < min_distance) {
+		min_distance = distance;
+		troll = this.trolls_[i];
+	    }
+	}
+	return troll;
+    }
+    return null;
 };
 
 trolls.Controller.prototype.choose = function(troll) {
     troll.choose();
     this.controlled_ = troll;
+};
+
+trolls.Controller.prototype.addVillage = function(village) {
+    this.village_ = village;
+    for (var i = 0; i < village.villagers_.length; i++) {
+	this.addActor_(village.villagers_[i]);
+    }
+};
+
+trolls.Controller.prototype.addTroll = function(troll) {
+    this.actors_.push(troll);
+    this.trolls_.push(troll);
 };
 
 trolls.Controller.prototype.addActor_ = function(thing) {

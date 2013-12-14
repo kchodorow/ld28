@@ -3,6 +3,8 @@ goog.provide('trolls.Troll');
 trolls.Troll = function() {
     lime.Sprite.call(this);
 
+    this.health = 100;
+
     // Bonuses
     this.powers_ = [];
     this.defense_ = 0;
@@ -17,6 +19,8 @@ trolls.Troll = function() {
 };
 
 goog.inherits(trolls.Troll, lime.Sprite);
+
+trolls.Troll.prototype.id = 'Troll';
 
 // px/ms
 trolls.Troll.SPEED = .1;
@@ -33,6 +37,10 @@ trolls.Troll.prototype.setDirection = function(x, y) {
 	this.facing_ = new goog.math.Coordinate(x, y);
     }
     this.direction_ = new goog.math.Coordinate(x, y);
+};
+
+trolls.Troll.prototype.getLocation = function() {
+    return this.loc_;
 };
 
 trolls.Troll.prototype.attack = function() {
