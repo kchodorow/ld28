@@ -1,17 +1,23 @@
-Pick up powerups
 Troll picker screen
 Multiple levels
+Have trolls fight villagers
+Have villagers fight trolls
 Make cursor correct on hud dialog buttons
+Tutorial
 
 Optional
 ========
-Powerups fade out?
+Powerups fade out over time
+Make everything selectable via keyboard
 
 ASSETS
 ======
+Pick palette
 Troll walk
 Troll smash
 Troll marker
+Troll mask
+Troll fart
 Villager walk
 Villager fight
 Hut

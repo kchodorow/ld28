@@ -8,7 +8,7 @@ trolls.Mixins.moveTowards = function(dt) {
 	}
     }
 
-    var distance = dt*trolls.data.Villager.SPEED;
+    var distance = dt*this.speed_;
     var pos = this.getPosition();
     var troll_pos = this.goal_.getPosition();
     var vec = new goog.math.Vec2(troll_pos.x - pos.x, troll_pos.y - pos.y);

@@ -5,14 +5,43 @@ goog.require('lime.scheduleManager');
 
 goog.require('trolls.data.Power');
 
-trolls.Controller = function(scene) {
+trolls.Controller = function(director) {
+    this.director_ = director;
     this.actors_ = [];
     this.trolls_ = [];
+};
 
-    goog.events.listen(scene, ['keydown'], goog.partial(this.keydown, this));
-    goog.events.listen(scene, ['keyup'], goog.partial(this.keyup, this));
+trolls.Controller.prototype.begin = function(troll) {
+    this.choose(troll);
+    this.scene_ = this.createScene();
+    goog.events.listen(this.scene_, ['keydown'], goog.partial(this.keydown, this));
+    goog.events.listen(this.scene_, ['keyup'], goog.partial(this.keyup, this));
+    this.director_.replaceScene(this.scene_);
+};
 
-    lime.scheduleManager.schedule(this.step, this);
+trolls.Controller.prototype.createScene = function() {
+    var scene = new lime.Scene();
+    var layer = new lime.Layer().setSize(WIDTH, HEIGHT).setAnchorPoint(.5, .5)
+	.setPosition(WIDTH/2, HEIGHT/2);
+
+    var village_size = new goog.math.Size(20, 15);
+    var village = new trolls.data.Village(village_size);
+    trolls.controller.addVillage(village);
+    layer.appendChild(village);
+
+    for (var i = 0; i < this.trolls_.length; i++) {
+	var troll = this.trolls_[i];
+	troll.setStartingPos(village_size);
+	layer.appendChild(troll);
+    }
+
+    scene.appendChild(layer);
+    var hud = new trolls.Hud();
+    hud.setPosition(WIDTH/2, 70);
+    trolls.controller.addHud(hud);
+    scene.appendChild(hud);
+
+    return scene;
 };
 
 trolls.Controller.prototype.keydown = function(controller, e) {
@@ -77,6 +106,7 @@ trolls.Controller.prototype.findClosestTarget_ = function(actor, targets) {
 trolls.Controller.prototype.choose = function(troll) {
     troll.choose();
     this.controlled_ = troll;
+    lime.scheduleManager.schedule(this.step, this);
 };
 
 trolls.Controller.prototype.addHud = function(hud) {
@@ -101,7 +131,7 @@ trolls.Controller.prototype.removeHut = function(e) {
 };
 
 trolls.Controller.prototype.addPower = function(power) {
-    this.controlled_.addPower(power);
+    power.attachTo(this.controlled_);
 };
 
 trolls.Controller.prototype.addTroll = function(troll) {

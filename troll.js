@@ -7,6 +7,7 @@ trolls.Troll = function() {
 
     this.health = 100;
     this.goal_ = null;
+    this.speed_ = trolls.Troll.SPEED;
 
     // Bonuses
     this.powers_ = [];
@@ -57,10 +58,6 @@ trolls.Troll.prototype.choose = function() {
     var marker = new lime.Sprite().setFill(trolls.resources.getMarker())
 	.setSize(5, 10).setPosition(0, -30);
     this.appendChild(marker);
-};
-
-trolls.Troll.prototype.addPower = function(power) {
-    this.powers_.push(power);
 };
 
 trolls.Troll.prototype.distanceToGoal = function() {

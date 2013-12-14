@@ -44,3 +44,15 @@ trolls.data.Resources.prototype.getPower = function() {
 trolls.data.Resources.prototype.getDialogBg = function() {
     return '#999';
 };
+
+trolls.data.Resources.prototype.getTrollMask = function() {
+    return '#fff';
+};
+
+trolls.data.Resources.prototype.getFart = function() {
+    return '#0f0';
+};
+
+trolls.data.Resources.prototype.getFireball = function() {
+    return '#f00';
+};

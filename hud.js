@@ -27,6 +27,7 @@ trolls.Hud.prototype.inquireAbout = function(power) {
 	.setPosition(-50, 50);
     yes.appendChild(lib.label('Yes'));
     goog.events.listen(yes, ['mousedown', 'touchstart'], function(e) {
+	power.getParent().removePower(power);
 	// TODO: nice sparkle animation for this
 	trolls.controller.addPower(power);
 	dialog.getParent().removeChild(dialog);

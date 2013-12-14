@@ -81,6 +81,11 @@ trolls.data.Village.prototype.addPower = function(power, pos) {
     this.power_ups_.push(power);
 };
 
+trolls.data.Village.prototype.removePower = function(power) {
+    this.removeChild(power);
+    goog.array.remove(this.power_ups_, power);
+}
+
 trolls.data.Village.prototype.getPowerUps = function() {
     return this.power_ups_;
 }

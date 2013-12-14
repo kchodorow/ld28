@@ -32,41 +32,57 @@ trolls.start = function(){
     trolls.stats = new trolls.data.Stats();
 
     var director = new lime.Director(document.body,1024,768);
-    var scene = new lime.Scene();
-    var layer = new lime.Layer().setSize(WIDTH, HEIGHT).setAnchorPoint(.5, .5)
-	.setPosition(WIDTH/2, HEIGHT/2);
-
-    trolls.controller = new trolls.Controller(scene);
-
-    var village_size = new goog.math.Size(20, 15);
-    var village = new trolls.data.Village(village_size);
-    trolls.controller.addVillage(village);
-    layer.appendChild(village);
+    trolls.controller = new trolls.Controller(director);
 
     var NUM_TROLLS = 5;
     for (var i = 0; i < NUM_TROLLS; i++) {
 	var troll = new trolls.Troll();
 	trolls.controller.addTroll(troll);
-	troll.setStartingPos(village_size);
-	layer.appendChild(troll);
-	if (i == 0) {
-	    trolls.controller.choose(troll);
-	}
     }
-
-    scene.appendChild(layer);
-
-    var hud = new trolls.Hud();
-    hud.setPosition(WIDTH/2, 70);
-    trolls.controller.addHud(hud);
-    scene.appendChild(hud);
     
     director.makeMobileWebAppCapable();
-
-    // set current scene active
-    director.replaceScene(scene);
-
+    director.replaceScene(trolls.pickerScene(trolls.controller.trolls_));
 };
+
+trolls.pickerScene = function(troll_list) {
+    var scene = new lime.Scene();
+    var layer = new lime.Sprite().setSize(WIDTH, HEIGHT)
+	.setPosition(0, HEIGHT/2).setAnchorPoint(0, .5).setFill('#fff');
+    layer.appendChild(
+	lib.label('Choose only one troll as your vessel:')
+	    .setPosition(WIDTH/2, -250));
+
+    var x_offset = (WIDTH/5)/2;
+    for (var i = 0; i < troll_list.length; ++i) {
+	var slot = new lime.Sprite().setSize(WIDTH/5-20, 400)
+	    .setPosition(i*WIDTH/5+x_offset, 0).setFill('#333');
+	var troll = troll_list[i];
+	slot.appendChild(troll.setPosition(0, -150));
+	if (troll.attack_ != 0) {
+	    slot.appendChild(
+		lib.label('Attack: '+troll.attack_).setPosition(0, -100));
+	}
+	if (troll.defense_ != 0) {
+	    slot.appendChild(
+		lib.label('Defense: '+troll.defense_).setPosition(0, 50));
+	}
+	if (troll.speed_ != trolls.Troll.SPEED) {
+	    slot.appendChild(
+		lib.label('Speed: '+troll.speed_).setPosition(0, 0));
+	}
+	if (troll.custom_attack_) {
+	    slot.appendChild(
+		lib.label('Special: '+troll.custom_attack_).setPosition(0, 50));
+	}
+	layer.appendChild(slot);
+	goog.events.listen(
+	    slot, ['mousedown', 'touchstart'],
+	    goog.bind(trolls.controller.begin, trolls.controller, troll));
+    }
+    scene.appendChild(layer);
+    return scene;
+};
+
 
 //this is required for outside access after code is compiled in ADVANCED_COMPILATIONS mode
 goog.exportSymbol('trolls.start', trolls.start);
