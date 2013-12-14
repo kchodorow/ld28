@@ -1,13 +1,55 @@
 goog.provide('trolls.Controller');
 
-trolls.Controller = function() {
+goog.require('goog.events.KeyCodes');
+goog.require('lime.scheduleManager');
+
+
+trolls.Controller = function(scene) {
     this.actors_ = [];
     this.trolls_ = [];
+
+    goog.events.listen(scene, ['keydown'], goog.partial(this.keydown, this));
+    goog.events.listen(scene, ['keyup'], goog.partial(this.keyup, this));
+
+    lime.scheduleManager.schedule(this.step, this);
+};
+
+trolls.Controller.prototype.keydown = function(controller, e) {
+    switch (e.event.keyCode) {
+    case goog.events.KeyCodes.LEFT:
+    case goog.events.KeyCodes.A:
+	controller.controlled_.setDirection(-1, 0);
+	break;
+    case goog.events.KeyCodes.RIGHT:
+    case goog.events.KeyCodes.D:
+	controller.controlled_.setDirection(1, 0);
+	break;
+    case goog.events.KeyCodes.UP:
+    case goog.events.KeyCodes.W:
+	controller.controlled_.setDirection(0, -1);
+	break;
+    case goog.events.KeyCodes.DOWN:
+    case goog.events.KeyCodes.S:
+	controller.controlled_.setDirection(0, 1);
+	break;
+    case goog.events.KeyCodes.SPACE:
+	controller.controlled_.attack();
+	break;
+    }
+};
+
+trolls.Controller.prototype.keyup = function(controller, e) {
+    controller.controlled_.setDirection(0, 0);
 };
 
 trolls.Controller.prototype.addTroll = function(troll) {
     this.actors_.push(troll);
     this.trolls_.push(troll);
+};
+
+trolls.Controller.prototype.choose = function(troll) {
+    troll.choose();
+    this.controlled_ = troll;
 };
 
 trolls.Controller.prototype.addActor_ = function(thing) {

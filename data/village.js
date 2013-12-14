@@ -36,16 +36,27 @@ trolls.data.Village = function(size) {
 
 goog.inherits(trolls.data.Village, lime.Sprite);
 
+trolls.data.Village.prototype.smooshed = function(pos) {
+    if (this.board_[pos.x][pos.y].id != "Grass") {
+	this.board_[pos.x][pos.y].smoosh();
+    }
+};
+
 trolls.data.Hut = function(size) {
     lime.Sprite.call(this);
 
     var x = lib.random(-size.width/2, size.width/2);
     var y = lib.random(-size.height/2, size.height/2);
     this.loc_ = new goog.math.Coordinate(x, y);
-    this.setPosition(x*LEN, y*LEN).setFill(trolls.resources.getHut())
+    this.setAnchorPoint(.5, 1).setPosition(x*LEN, y*LEN+LEN/2)
+	.setFill(trolls.resources.getHut())
 	.setSize(LEN, LEN);
 };
 
 goog.inherits(trolls.data.Hut, lime.Sprite);
 
 trolls.data.Hut.prototype.id = "Hut";
+
+trolls.data.Hut.prototype.smoosh = function() {
+    this.runAction(new lime.animation.ScaleTo(1, 0));
+};

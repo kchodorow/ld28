@@ -30,11 +30,11 @@ trolls.start = function(){
     trolls.tutorial = new trolls.data.Tutorial();
     trolls.stats = new trolls.data.Stats();
 
-    var controller = new trolls.Controller();
     var director = new lime.Director(document.body,1024,768);
     var scene = new lime.Scene();
     var layer = new lime.Layer().setSize(WIDTH, HEIGHT).setAnchorPoint(.5, .5)
 	.setPosition(WIDTH/2, HEIGHT/2);
+    var controller = new trolls.Controller(scene);
 
     var village_size = new goog.math.Size(20, 20);
     var village = new trolls.data.Village(village_size);
@@ -47,7 +47,7 @@ trolls.start = function(){
 	troll.setStartingPos(village_size);
 	layer.appendChild(troll);
 	if (i == 0) {
-	    troll.choose();
+	    controller.choose(troll);
 	}
     }
 
