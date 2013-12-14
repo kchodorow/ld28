@@ -44,22 +44,25 @@ trolls.Controller.prototype.keyup = function(controller, e) {
 
 trolls.Controller.prototype.findTarget = function(actor) {
     if (actor.id == 'Troll') {
-	var huts = this.village_.getHuts();
-	return huts[lib.random(huts.length)];
+	return this.findClosestTarget_(actor, this.village_.getHuts());
     } else {
-	var min_distance = WIDTH*HEIGHT;
-	var troll = null;
-	for (var i = 0; i < this.trolls_.length; ++i) {
-	    var distance = goog.math.Coordinate.distance(
-		this.trolls_[i].getPosition(), actor.getPosition());
-	    if (distance < min_distance) {
-		min_distance = distance;
-		troll = this.trolls_[i];
-	    }
-	}
-	return troll;
+	return this.findClosestTarget_(actor, this.trolls_);
     }
     return null;
+};
+
+trolls.Controller.prototype.findClosestTarget_ = function(actor, targets) {
+    var min_distance = WIDTH*HEIGHT;
+    var target = null;
+    for (var i = 0; i < targets.length; ++i) {
+	var distance = goog.math.Coordinate.distance(
+	    targets[i].getPosition(), actor.getPosition());
+	if (distance < min_distance) {
+	    min_distance = distance;
+	    target = targets[i];
+	}
+    }
+    return target;
 };
 
 trolls.Controller.prototype.choose = function(troll) {
@@ -67,11 +70,20 @@ trolls.Controller.prototype.choose = function(troll) {
     this.controlled_ = troll;
 };
 
+trolls.Controller.prototype.addHud = function(hud) {
+    this.hud_ = hud;
+}
+
 trolls.Controller.prototype.addVillage = function(village) {
     this.village_ = village;
     for (var i = 0; i < village.villagers_.length; i++) {
 	this.addActor_(village.villagers_[i]);
     }
+};
+
+trolls.Controller.prototype.removeHut = function(e) {
+    var hut = e.target.targets[0];
+    this.village_.removeHut(hut);
 };
 
 trolls.Controller.prototype.addTroll = function(troll) {
@@ -81,6 +93,10 @@ trolls.Controller.prototype.addTroll = function(troll) {
 
 trolls.Controller.prototype.addActor_ = function(thing) {
     this.actors_.push(thing);
+};
+
+trolls.Controller.prototype.changeMorale = function(amount) {
+    this.hud_.changeMorale(amount);
 };
 
 trolls.Controller.prototype.step = function(dt) {

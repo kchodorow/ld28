@@ -14,6 +14,7 @@ goog.require('lime.animation.MoveTo');
 
 goog.require('lib');
 goog.require('trolls.Controller'); // Ha!
+goog.require('trolls.Hud');
 goog.require('trolls.Troll');
 goog.require('trolls.data.Resources');
 goog.require('trolls.data.Stats');
@@ -55,6 +56,11 @@ trolls.start = function(){
 
     scene.appendChild(layer);
 
+    var hud = new trolls.Hud();
+    hud.setPosition(WIDTH/2, 70);
+    trolls.controller.addHud(hud);
+    scene.appendChild(hud);
+    
     director.makeMobileWebAppCapable();
 
     // set current scene active

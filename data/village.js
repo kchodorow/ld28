@@ -37,6 +37,10 @@ trolls.data.Village.prototype.addHuts = function() {
     var num_huts = lib.random(MIN_HUTS, MAX_HUTS);
     for (var i = 0; i < num_huts; i++) {
 	var hut = new trolls.data.Hut(this.box_);
+	if (goog.DEBUG) {
+	    hut.appendChild(lib.label(i));
+	    hut.num_ = i;
+	}
 	if (this.board_[hut.loc_.x][hut.loc_.y].id != "Grass") {
 	    continue;
 	}
@@ -44,6 +48,11 @@ trolls.data.Village.prototype.addHuts = function() {
 	this.huts_.push(hut);
 	this.appendChild(hut);
     }
+};
+
+trolls.data.Village.prototype.removeHut = function(hut) {
+    this.removeChild(hut);
+    goog.array.remove(this.huts_, hut);
 };
 
 trolls.data.Village.prototype.addVillagers = function() {
@@ -66,12 +75,6 @@ trolls.data.Village.prototype.getHuts = function() {
     return this.huts_;
 };
 
-trolls.data.Village.prototype.smooshed = function(pos) {
-    if (this.board_[pos.x][pos.y].id != "Grass") {
-	this.board_[pos.x][pos.y].smoosh();
-    }
-};
-
 trolls.data.Hut = function(box) {
     lime.Sprite.call(this);
 
@@ -88,7 +91,12 @@ goog.inherits(trolls.data.Hut, lime.Sprite);
 trolls.data.Hut.prototype.id = "Hut";
 
 trolls.data.Hut.prototype.smoosh = function() {
-    this.runAction(new lime.animation.ScaleTo(1, 0));
+    var action = new lime.animation.ScaleTo(1, 0)
+    this.runAction(action);
+    goog.events.listen(
+	action, lime.animation.Event.STOP,
+	goog.bind(trolls.controller.removeHut, trolls.controller));
+    trolls.controller.changeMorale(trolls.resources.MORALE.HUT_SMOOSH);
 };
 
 trolls.data.Villager = function(box) {
