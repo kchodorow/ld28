@@ -16,8 +16,17 @@ trolls.Controller.prototype.begin = function(troll) {
     this.scene_ = this.createScene();
     goog.events.listen(this.scene_, ['keydown'], goog.partial(this.keydown, this));
     goog.events.listen(this.scene_, ['keyup'], goog.partial(this.keyup, this));
+    lime.scheduleManager.schedule(this.step, this);
     this.director_.replaceScene(this.scene_);
 };
+
+trolls.Controller.prototype.changeScene = function() {
+    this.controlled_.unchoose();
+    this.director_.replaceScene(trolls.pickerScene());
+    this.actors_ = [];
+    goog.array.extend(this.actors_, this.trolls_);
+    lime.scheduleManager.unschedule(this.step, this);
+}
 
 trolls.Controller.prototype.createScene = function() {
     var scene = new lime.Scene();
@@ -26,7 +35,7 @@ trolls.Controller.prototype.createScene = function() {
 
     var village_size = new goog.math.Size(20, 15);
     var village = new trolls.data.Village(village_size);
-    trolls.controller.addVillage(village);
+    this.addVillage(village);
     layer.appendChild(village);
 
     for (var i = 0; i < this.trolls_.length; i++) {
@@ -38,7 +47,7 @@ trolls.Controller.prototype.createScene = function() {
     scene.appendChild(layer);
     var hud = new trolls.Hud();
     hud.setPosition(WIDTH/2, 70);
-    trolls.controller.addHud(hud);
+    this.addHud(hud);
     scene.appendChild(hud);
 
     return scene;
@@ -64,7 +73,9 @@ trolls.Controller.prototype.keydown = function(controller, e) {
 	break;
     case goog.events.KeyCodes.SPACE:
 	var troll = controller.controlled_;
-	troll.goal_ = controller.findTarget(troll);
+	var targets = goog.array.concat(
+	    controller.village_.getHuts(), controller.village_.getPowerUps());
+	troll.goal_ = controller.findClosestTarget_(troll, targets);
 	if (troll.goal_.id == 'Power') {
 	    controller.hud_.inquireAbout(troll.goal_);
 	} else {
@@ -80,9 +91,7 @@ trolls.Controller.prototype.keyup = function(controller, e) {
 
 trolls.Controller.prototype.findTarget = function(actor) {
     if (actor.id == 'Troll') {
-	var targets = goog.array.concat(
-	    this.village_.getHuts(), this.village_.getPowerUps());
-	return this.findClosestTarget_(actor, targets);
+	return this.findClosestTarget_(actor, this.village_.getHuts());
     } else {
 	return this.findClosestTarget_(actor, this.trolls_);
     }
@@ -106,7 +115,6 @@ trolls.Controller.prototype.findClosestTarget_ = function(actor, targets) {
 trolls.Controller.prototype.choose = function(troll) {
     troll.choose();
     this.controlled_ = troll;
-    lime.scheduleManager.schedule(this.step, this);
 };
 
 trolls.Controller.prototype.addHud = function(hud) {
@@ -124,10 +132,10 @@ trolls.Controller.prototype.removeHut = function(e) {
     var hut = e.target.targets[0];
     var pos = hut.getPosition();
     this.village_.removeHut(hut);
-//    if (lib.random(3) == 0) {
+    if (lib.random(3) == 0) {
 	var power = trolls.data.Power.getRandom();
 	this.village_.addPower(power, pos);
-//    }
+    }
 };
 
 trolls.Controller.prototype.addPower = function(power) {
@@ -156,6 +164,6 @@ trolls.Controller.prototype.step = function(dt) {
     // in %
     var THRESHOLD = 5;
     if (this.hud_.getMorale() < THRESHOLD) {
-	this.director_.replaceScene(trolls.pickerScene());
+	this.changeScene();
     }
 };

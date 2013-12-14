@@ -28,7 +28,7 @@ goog.inherits(trolls.Troll, lime.Sprite);
 trolls.Troll.prototype.id = 'Troll';
 
 // px/ms
-trolls.Troll.SPEED = .1;
+trolls.Troll.SPEED = .05;
 
 trolls.Troll.prototype.setStartingPos = function(size) {
     this.loc_ = new goog.math.Coordinate(
@@ -49,15 +49,19 @@ trolls.Troll.prototype.getLocation = function() {
 };
 
 trolls.Troll.prototype.attack = function() {
-    this.attacking_ = true;
     this.goal_.smoosh();
+    this.goal_ = null;
 };
 
 trolls.Troll.prototype.choose = function() {
     this.controlled_ = true;
-    var marker = new lime.Sprite().setFill(trolls.resources.getMarker())
+    this.marker_ = new lime.Sprite().setFill(trolls.resources.getMarker())
 	.setSize(5, 10).setPosition(0, -30);
-    this.appendChild(marker);
+    this.appendChild(this.marker_);
+};
+
+trolls.Troll.prototype.unchoose = function() {
+    this.removeChild(this.marker_);
 };
 
 trolls.Troll.prototype.distanceToGoal = function() {
@@ -74,10 +78,6 @@ trolls.Troll.prototype.step = function(dt) {
 	this.setPosition(
 	    this.getPosition().translate(
 		distance*this.direction_.x, distance*this.direction_.y));
-	return;
-    }
-
-    if (this.attacking_) {
 	return;
     }
 

@@ -123,14 +123,14 @@ trolls.data.Villager = function(box) {
     this.setSize(15, 15).setFill(trolls.resources.getVillager())
 	.setPosition(pos_x*LEN, pos_y*LEN);
     this.goal_ = null;
-
+    this.speed_ = trolls.data.Villager.SPEED;
     this.move = goog.bind(trolls.Mixins.moveTowards, this);
 };
 
 goog.inherits(trolls.data.Villager, lime.Sprite);
 
 // px/ms
-trolls.data.Villager.SPEED = .15;
+trolls.data.Villager.SPEED = .1;
 
 trolls.data.Villager.prototype.step = function(dt) {
     this.move(dt);
