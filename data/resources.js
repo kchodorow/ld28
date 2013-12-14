@@ -36,3 +36,7 @@ trolls.data.Resources.prototype.getMoraleMeterBg = function() {
 trolls.data.Resources.prototype.getMoraleMeterFg = function(percent) {
     return '#ff0';
 };
+
+trolls.data.Resources.prototype.getPower = function() {
+    return '#ff0';
+};

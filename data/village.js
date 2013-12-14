@@ -75,6 +75,10 @@ trolls.data.Village.prototype.getHuts = function() {
     return this.huts_;
 };
 
+trolls.data.Village.prototype.addPower = function(power, pos) {
+    this.appendChild(power.getSprite().setPosition(pos));
+};
+
 trolls.data.Hut = function(box) {
     lime.Sprite.call(this);
 

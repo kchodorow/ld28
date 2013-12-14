@@ -3,6 +3,7 @@ goog.provide('trolls.Controller');
 goog.require('goog.events.KeyCodes');
 goog.require('lime.scheduleManager');
 
+goog.require('trolls.data.Power');
 
 trolls.Controller = function(scene) {
     this.actors_ = [];
@@ -83,7 +84,12 @@ trolls.Controller.prototype.addVillage = function(village) {
 
 trolls.Controller.prototype.removeHut = function(e) {
     var hut = e.target.targets[0];
+    var pos = hut.getPosition();
     this.village_.removeHut(hut);
+    if (lib.random(3) == 0) {
+	var power = trolls.data.Power.getRandom();
+	this.village_.addPower(power, pos);
+    }
 };
 
 trolls.Controller.prototype.addTroll = function(troll) {
