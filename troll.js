@@ -1,9 +1,12 @@
 goog.provide('trolls.Troll');
 
+goog.require('trolls.Mixins');
+
 trolls.Troll = function() {
     lime.Sprite.call(this);
 
     this.health = 100;
+    this.goal_ = null;
 
     // Bonuses
     this.powers_ = [];
@@ -59,8 +62,13 @@ trolls.Troll.prototype.addPower = function(power) {
 };
 
 trolls.Troll.prototype.step = function(dt) {
-    var distance = trolls.Troll.SPEED * dt;
-    this.setPosition(
-	this.getPosition().translate(
-	    distance*this.direction_.x, distance*this.direction_.y));
+    if (this.controlled_) {
+	var distance = trolls.Troll.SPEED * dt;
+	this.setPosition(
+	    this.getPosition().translate(
+		distance*this.direction_.x, distance*this.direction_.y));
+	return;
+    }
+
+    goog.bind(trolls.Mixins.moveTowards, this, dt)();
 };

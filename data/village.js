@@ -1,6 +1,7 @@
 goog.provide('trolls.data.Village');
 
 goog.require('lib');
+goog.require('trolls.Mixins');
 
 // Create a random village.
 trolls.data.Village = function(size) {
@@ -102,17 +103,5 @@ goog.inherits(trolls.data.Villager, lime.Sprite);
 trolls.data.Villager.SPEED = .15;
 
 trolls.data.Villager.prototype.step = function(dt) {
-    if (this.goal_ == null) {
-	this.goal_ = trolls.controller.findTarget(this);
-	if (this.goal_ == null) {
-	    throw "that's weird";
-	}
-    }
-
-    var distance = dt*trolls.data.Villager.SPEED;
-    var pos = this.getPosition();
-    var troll_pos = this.goal_.getPosition();
-    var vec = new goog.math.Vec2(troll_pos.x - pos.x, troll_pos.y - pos.y);
-    vec = vec.normalize().scale(Math.sqrt(distance));
-    this.setPosition(pos.x+vec.x, pos.y+vec.y);
+    goog.bind(trolls.Mixins.moveTowards, this, dt)();
 };
