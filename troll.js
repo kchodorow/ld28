@@ -49,9 +49,6 @@ trolls.Troll.prototype.getLocation = function() {
 
 trolls.Troll.prototype.attack = function() {
     this.attacking_ = true;
-    if (this.controlled_) {
-	this.goal_ = trolls.controller.findTarget(this);
-    }
     this.goal_.smoosh();
 };
 

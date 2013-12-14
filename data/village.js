@@ -23,6 +23,7 @@ trolls.data.Village = function(size) {
 	    this.appendChild(grass);
 	}
     }
+    this.power_ups_ = [];
 
     this.addHuts();
     this.addVillagers();
@@ -76,8 +77,13 @@ trolls.data.Village.prototype.getHuts = function() {
 };
 
 trolls.data.Village.prototype.addPower = function(power, pos) {
-    this.appendChild(power.getSprite().setPosition(pos));
+    this.appendChild(power.setPosition(pos));
+    this.power_ups_.push(power);
 };
+
+trolls.data.Village.prototype.getPowerUps = function() {
+    return this.power_ups_;
+}
 
 trolls.data.Hut = function(box) {
     lime.Sprite.call(this);

@@ -40,3 +40,7 @@ trolls.data.Resources.prototype.getMoraleMeterFg = function(percent) {
 trolls.data.Resources.prototype.getPower = function() {
     return '#ff0';
 };
+
+trolls.data.Resources.prototype.getDialogBg = function() {
+    return '#999';
+};

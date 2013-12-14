@@ -14,6 +14,36 @@ trolls.Hud.prototype.changeMorale = function(amount) {
     this.meter_.updateProgress(amount);
 };
 
+trolls.Hud.prototype.inquireAbout = function(power) {
+    var dialog = new lime.Sprite().setSize(300, 200)
+	.setFill(trolls.resources.getDialogBg())
+	.setPosition(0, HEIGHT/2);
+    var label = lib.label(
+	'Would you like this troll to acquire the power: '+power.name)
+	.setSize(280, 180);
+    dialog.appendChild(label);
+
+    var yes = new lime.Sprite().setSize(50, 30).setStroke(1, '#000')
+	.setPosition(-50, 50);
+    yes.appendChild(lib.label('Yes'));
+    goog.events.listen(yes, ['mousedown', 'touchstart'], function(e) {
+	// TODO: nice sparkle animation for this
+	trolls.controller.addPower(power);
+	dialog.getParent().removeChild(dialog);
+    });
+    dialog.appendChild(yes);
+
+    var no = new lime.Sprite().setSize(50, 30).setStroke(1, '#000')
+	.setPosition(50, 50);
+    no.appendChild(lib.label('No'));
+    goog.events.listen(no, ['mousedown', 'touchstart'], function(e) {
+	dialog.getParent().removeChild(dialog);
+    });
+    dialog.appendChild(no);
+
+    this.appendChild(dialog);
+};
+
 trolls.MoraleMeter = function() {
     lime.RoundedRect.call(this);
 

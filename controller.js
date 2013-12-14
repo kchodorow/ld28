@@ -34,7 +34,13 @@ trolls.Controller.prototype.keydown = function(controller, e) {
 	controller.controlled_.setDirection(0, 1);
 	break;
     case goog.events.KeyCodes.SPACE:
-	controller.controlled_.attack();
+	var troll = controller.controlled_;
+	troll.goal_ = controller.findTarget(troll);
+	if (troll.goal_.id == 'Power') {
+	    controller.hud_.inquireAbout(troll.goal_);
+	} else {
+	    troll.attack();
+	}
 	break;
     }
 };
@@ -45,7 +51,9 @@ trolls.Controller.prototype.keyup = function(controller, e) {
 
 trolls.Controller.prototype.findTarget = function(actor) {
     if (actor.id == 'Troll') {
-	return this.findClosestTarget_(actor, this.village_.getHuts());
+	var targets = goog.array.concat(
+	    this.village_.getHuts(), this.village_.getPowerUps());
+	return this.findClosestTarget_(actor, targets);
     } else {
 	return this.findClosestTarget_(actor, this.trolls_);
     }
@@ -86,10 +94,14 @@ trolls.Controller.prototype.removeHut = function(e) {
     var hut = e.target.targets[0];
     var pos = hut.getPosition();
     this.village_.removeHut(hut);
-    if (lib.random(3) == 0) {
+//    if (lib.random(3) == 0) {
 	var power = trolls.data.Power.getRandom();
 	this.village_.addPower(power, pos);
-    }
+//    }
+};
+
+trolls.Controller.prototype.addPower = function(power) {
+    this.controlled_.addPower(power);
 };
 
 trolls.Controller.prototype.addTroll = function(troll) {
