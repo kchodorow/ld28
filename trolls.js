@@ -55,34 +55,6 @@ trolls.start = function(){
 
     director.makeMobileWebAppCapable();
 
-    //add some interaction
-    // goog.events.listen(target,['mousedown','touchstart'],function(e){
-
-    //                        //animate
-    //                        target.runAction(new lime.animation.Spawn(
-    //                                             new lime.animation.FadeTo(.5).setDuration(.2),
-    //                                             new lime.animation.ScaleTo(1.5).setDuration(.8)
-    //                                         ));
-
-    //                        title.runAction(new lime.animation.FadeTo(1));
-
-    //                        //let target follow the mouse/finger
-    //                        e.startDrag();
-
-    //                        //listen for end event
-    //                        e.swallow(['mouseup','touchend'],function(){
-    //                                      target.runAction(new lime.animation.Spawn(
-    //                                                           new lime.animation.FadeTo(1),
-    //                                                           new lime.animation.ScaleTo(1),
-    //                                                           new lime.animation.MoveTo(512,384)
-    //                                                       ));
-
-    //                                      title.runAction(new lime.animation.FadeTo(0));
-    //                                  });
-
-
-    //                    });
-
     // set current scene active
     director.replaceScene(scene);
 

@@ -18,3 +18,7 @@ trolls.data.Resources.prototype.getTroll = function() {
 trolls.data.Resources.prototype.getMarker = function() {
     return '#ddd';
 };
+
+trolls.data.Resources.prototype.getVillager = function() {
+    return '#00f';
+};
