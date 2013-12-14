@@ -41,10 +41,11 @@ trolls.start = function(){
     }
     
     director.makeMobileWebAppCapable();
-    director.replaceScene(trolls.pickerScene(trolls.controller.trolls_));
+    director.replaceScene(trolls.pickerScene());
 };
 
-trolls.pickerScene = function(troll_list) {
+trolls.pickerScene = function() {
+    var troll_list = trolls.controller.trolls_;
     var scene = new lime.Scene();
     var layer = new lime.Sprite().setSize(WIDTH, HEIGHT)
 	.setPosition(0, HEIGHT/2).setAnchorPoint(0, .5).setFill('#fff');

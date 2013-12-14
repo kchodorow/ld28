@@ -7,12 +7,12 @@ trolls.Troll = function() {
 
     this.health = 100;
     this.goal_ = null;
-    this.speed_ = trolls.Troll.SPEED;
 
     // Bonuses
     this.powers_ = [];
     this.defense_ = 0;
     this.attack_ = 0;
+    this.speed_ = trolls.Troll.SPEED;
 
     // Movement
     this.controlled_ = false;

@@ -60,7 +60,7 @@ trolls.data.Power.Speed = function() {
     this.bonus = lib.random(MIN, MAX);
     this.name = "+"+this.bonus+" speed";
 };
-goog.inherits(trolls.data.Power.Attack, trolls.data.Power.BasePower);
+goog.inherits(trolls.data.Power.Speed, trolls.data.Power.BasePower);
 
 trolls.data.Power.Speed.prototype.attachTo = function(troll) {
     troll.speed_ += this.bonus/100;

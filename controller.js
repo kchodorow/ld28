@@ -152,4 +152,10 @@ trolls.Controller.prototype.step = function(dt) {
     for (var i = 0; i < num_actors; ++i) {
 	this.actors_[i].step(dt);
     }
+
+    // in %
+    var THRESHOLD = 5;
+    if (this.hud_.getMorale() < THRESHOLD) {
+	this.director_.replaceScene(trolls.pickerScene());
+    }
 };

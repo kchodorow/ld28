@@ -14,6 +14,10 @@ trolls.Hud.prototype.changeMorale = function(amount) {
     this.meter_.updateProgress(amount);
 };
 
+trolls.Hud.prototype.getMorale = function() {
+    return this.meter_.getMorale();
+};
+
 trolls.Hud.prototype.inquireAbout = function(power) {
     var dialog = new lime.Sprite().setSize(300, 200)
 	.setFill(trolls.resources.getDialogBg())
@@ -80,4 +84,8 @@ trolls.MoraleMeter.prototype.updateProgress = function(amount) {
     this.inner_.setSize(
 	trolls.MoraleMeter.WIDTH*(this.current_/this.max_), 
 	trolls.MoraleMeter.HEIGHT);
+};
+
+trolls.MoraleMeter.prototype.getMorale = function() {
+    return 100*(this.current_/this.max_);
 };
