@@ -41,6 +41,7 @@ trolls.data.Village.prototype.addHuts = function() {
 	    continue;
 	}
 	this.board_[hut.loc_.x][hut.loc_.y] = hut;
+	this.huts_.push(hut);
 	this.appendChild(hut);
     }
 };
@@ -59,6 +60,10 @@ trolls.data.Village.prototype.addVillagers = function() {
 
 trolls.data.Village.prototype.getVillagers = function() {
     return this.villagers_;
+};
+
+trolls.data.Village.prototype.getHuts = function() {
+    return this.huts_;
 };
 
 trolls.data.Village.prototype.smooshed = function(pos) {

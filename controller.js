@@ -44,16 +44,8 @@ trolls.Controller.prototype.keyup = function(controller, e) {
 
 trolls.Controller.prototype.findTarget = function(actor) {
     if (actor.id == 'Troll') {
-	// Check a 3x3 box "in front" of the troll
-	var loc = actor.getLocation();
-	var box = new goog.math.Box(
-	    (loc.y-2)*LEN, (loc.x+2)*LEN, (loc.y+2)*LEN, (loc.x-2)*LEN);
-	var villagers = this.village_.getVillagers();
-	for (var i = 0; i < villagers.length; ++i) {
-	    if (box.contains(villagers[i].getPosition())) {
-		return villagers[i];
-	    }
-	}
+	var huts = this.village_.getHuts();
+	return huts[lib.random(huts.length)];
     } else {
 	var min_distance = WIDTH*HEIGHT;
 	var troll = null;
