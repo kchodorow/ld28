@@ -69,6 +69,11 @@ trolls.data.Village.prototype.addVillagers = function() {
 	var villager = new trolls.data.Villager(this.box_);
 	this.villagers_.push(villager);
 	this.appendChild(villager);
+
+	if (goog.DEBUG) {
+//	    villager.appendChild(lib.label(i));
+	    villager.num_ = i;
+	}
     }
 };
 
@@ -144,6 +149,7 @@ goog.inherits(trolls.data.Villager, lime.Sprite);
 
 trolls.data.Villager.prototype.smoosh = function(damage) {
     this.health_ -= damage;
+    this.dead_ = true;
     this.appendChild(lib.pointLabel(-damage));
     // Always 1-hit death
     var action = new lime.animation.ScaleTo(1, 0)
@@ -156,7 +162,7 @@ trolls.data.Villager.prototype.smoosh = function(damage) {
 
 trolls.data.Villager.prototype.attack = function() {
     this.attacking_ = true;
-    if (this.goal_.id == 'Hut') {
+    if (this.goal_.id != 'Troll') {
 	return;
     }
     var villager = this;
@@ -165,8 +171,16 @@ trolls.data.Villager.prototype.attack = function() {
     goog.events.listen(
 	action, lime.animation.Event.STOP,
 	function() {
+	    if (villager.dead_) {
+		return;
+	    }
 	    villager.attacking_ = false;
-	    villager.goal_ = null;
+	    var diff = goog.math.Coordinate.difference(
+		villager.getPosition(), villager.goal_.getPosition());
+	    var dummy = new lime.Node().setPosition(
+		villager.getPosition().clone().translate(diff.scale(3)));
+	    villager.goal_ = dummy;
+	    this.attacking_ = false;
 	});
 
     this.goal_.changeHealth(-1);

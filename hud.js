@@ -19,19 +19,20 @@ trolls.Hud.prototype.getMorale = function() {
 };
 
 trolls.Hud.prototype.inquireAbout = function(power) {
-    var dialog = new lime.Sprite().setSize(500, 300)
+    var size = new goog.math.Size(500, 300);
+    var dialog = new lime.Sprite().setSize(size)
 	.setFill(trolls.resources.getDialogBg())
-	.setPosition(0, HEIGHT/2);
+	.setPosition(0, HEIGHT/2-size.height/2)
+	.setStroke(2, trolls.resources.DARK_GREEN);
     var label = lib.label(
 	'Would you like this troll to acquire the power: '+power.name)
-	.setSize(280, 180);
+	.setSize(size.width-40, size.height-40);
     dialog.appendChild(label);
 
     var yes = new lime.Sprite().setSize(50, 30).setStroke(1, '#000')
 	.setPosition(-50, 50);
     yes.appendChild(lib.label('Yes'));
     goog.events.listen(yes, ['mousedown', 'touchstart'], function(e) {
-	power.getParent().removePower(power);
 	// TODO: nice sparkle animation for this
 	trolls.controller.addPower(power);
 	dialog.getParent().removeChild(dialog);

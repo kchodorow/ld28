@@ -16,6 +16,7 @@ trolls.data.Power.BasePower = function() {
 	new lime.animation.ScaleTo(1.2), new lime.animation.ScaleTo(1.0));
     this.runAction(new lime.animation.Loop(pulse));
     this.id = "Power";
+    this.inquire = false;
 };
 goog.inherits(trolls.data.Power.BasePower, lime.Sprite);
 
@@ -37,6 +38,8 @@ goog.inherits(trolls.data.Power.Defense, trolls.data.Power.BasePower);
 
 trolls.data.Power.Defense.prototype.attachTo = function(troll) {
     troll.defense_ += this.bonus;
+    troll.appendChild(lib.pointLabel(this.name));
+    this.getParent().removeChild(this);
 }
 
 // Attack
@@ -53,6 +56,8 @@ goog.inherits(trolls.data.Power.Attack, trolls.data.Power.BasePower);
 
 trolls.data.Power.Attack.prototype.attachTo = function(troll) {
     troll.attack_ += this.bonus;
+    troll.appendChild(lib.pointLabel(this.name));
+    this.getParent().removeChild(this);
 };
 
 // Speed
@@ -69,6 +74,8 @@ goog.inherits(trolls.data.Power.Speed, trolls.data.Power.BasePower);
 
 trolls.data.Power.Speed.prototype.attachTo = function(troll) {
     troll.speed_ += this.bonus/100;
+    troll.appendChild(lib.pointLabel(this.name));
+    this.getParent().removeChild(this);
 };
 
 // Stinking cloud
@@ -76,12 +83,14 @@ trolls.data.Power.Speed.prototype.attachTo = function(troll) {
 trolls.data.Power.StinkingCloud = function() {
     trolls.data.Power.BasePower.call(this);
     this.name = "farting";
+    this.inquire = true;
 };
 goog.inherits(trolls.data.Power.StinkingCloud, trolls.data.Power.BasePower);
 
 trolls.data.Power.StinkingCloud.prototype.attachTo = function(troll) {
     troll.attack = this.attack;
     troll.custom_attack_ = 'Fart';
+    this.getParent().removeChild(this);
 };
 
 trolls.data.Power.StinkingCloud.prototype.attack = function() {
@@ -95,12 +104,15 @@ trolls.data.Power.StinkingCloud.prototype.attack = function() {
 trolls.data.Power.TrollMask = function() {
     trolls.data.Power.BasePower.call(this);
     this.name = "warrior mask";
+    this.inquire = true;
 };
 goog.inherits(trolls.data.Power.TrollMask, trolls.data.Power.BasePower);
 
 trolls.data.Power.TrollMask.prototype.attachTo = function(troll) {
     troll.appendChild(
 	new lime.Sprite().setFill(trolls.resources.getTrollMask()));
+    troll.appendChild(lib.pointLabel("Trololol"));
+    this.getParent().removeChild(this);
 };
 
 // Make bigger
@@ -108,6 +120,7 @@ trolls.data.Power.TrollMask.prototype.attachTo = function(troll) {
 trolls.data.Power.Bigger = function() {
     trolls.data.Power.BasePower.call(this);
     this.name = "embiggen";
+    this.inquire = true;
 };
 goog.inherits(trolls.data.Power.Bigger, trolls.data.Power.BasePower);
 
@@ -115,6 +128,7 @@ trolls.data.Power.Bigger.prototype.attachTo = function(troll) {
     troll.setSize(troll.getSize().scale(1.2));
     troll.defense_ += 1;
     troll.speed_ -= 1;
+    this.getParent().removeChild(this);
 };
 
 // Make smaller
@@ -122,6 +136,7 @@ trolls.data.Power.Bigger.prototype.attachTo = function(troll) {
 trolls.data.Power.Smaller = function() {
     trolls.data.Power.BasePower.call(this);
     this.name = "miniaturize";
+    this.inquire = true;
 };
 goog.inherits(trolls.data.Power.Smaller, trolls.data.Power.BasePower);
 
@@ -129,6 +144,7 @@ trolls.data.Power.Smaller.prototype.attachTo = function(troll) {
     troll.setSize(troll.getSize().scale(.8));
     troll.attack_ -= 1;
     troll.speed_ += 1;
+    this.getParent().removeChild(this);
 };
 
 // Shoot fireballs
@@ -137,12 +153,14 @@ trolls.data.Power.Fireball = function() {
     trolls.data.Power.BasePower.call(this);
     this.action = {attack : this.throwFireball};
     this.name = "fireball";
+    this.inquire = true;
 };
 goog.inherits(trolls.data.Power.Fireball, trolls.data.Power.BasePower);
 
 trolls.data.Power.Fireball.prototype.attachTo = function(troll) {
     troll.attack = this.attack;
     troll.custom_attack_ = 'Fireball';
+    this.getParent().removeChild(this);
 };
 
 trolls.data.Power.Fireball.prototype.attack = function() {
@@ -157,6 +175,7 @@ trolls.data.Power.Fireball.prototype.attack = function() {
 trolls.data.Power.types_ = [
     trolls.data.Power.Defense,
     trolls.data.Power.Attack,
+    trolls.data.Power.Speed,
     trolls.data.Power.StinkingCloud,
     trolls.data.Power.TrollMask,
     trolls.data.Power.Bigger,

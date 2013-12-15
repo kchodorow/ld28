@@ -84,7 +84,8 @@ trolls.Troll.prototype.attack = function() {
 
 trolls.Troll.prototype.choose = function() {
     this.controlled_ = true;
-    this.marker_ = new lime.Sprite().setFill(trolls.resources.getMarker());
+    this.marker_ = new lime.Circle().setSize(LEN, LEN).setOpacity(.2)
+	.setFill(trolls.resources.RED);
     this.appendChild(this.marker_);
 };
 

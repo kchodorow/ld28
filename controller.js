@@ -52,7 +52,7 @@ trolls.Controller.prototype.createScene = function() {
 
     scene.appendChild(layer);
     var hud = new trolls.Hud();
-    hud.setPosition(WIDTH/2, 70);
+    hud.setPosition(WIDTH/2, 100);
     this.addHud(hud);
     scene.appendChild(hud);
 
@@ -80,13 +80,28 @@ trolls.Controller.prototype.keydown = function(controller, e) {
     case goog.events.KeyCodes.SPACE:
 	var troll = controller.controlled_;
 	var targets = goog.array.concat(
-	    controller.village_.getHuts(), controller.village_.getPowerUps());
+	    controller.village_.getHuts(), controller.village_.getPowerUps(),
+	    controller.village_.getVillagers());
 	troll.goal_ = controller.findClosestTarget_(troll, targets);
 	if (troll.goal_.id == 'Power') {
-	    controller.hud_.inquireAbout(troll.goal_);
+	    if (troll.goal_.inquire) {
+		controller.hud_.inquireAbout(troll.goal_);
+	    } else {
+		troll.goal_.attachTo(troll);
+	    }
 	} else {
 	    troll.attack();
 	}
+	break;
+    case goog.events.KeyCodes.ZERO:
+    case goog.events.KeyCodes.ONE:
+    case goog.events.KeyCodes.TWO:
+    case goog.events.KeyCodes.THREE:
+    case goog.events.KeyCodes.FOUR:
+    case goog.events.KeyCodes.FIVE:
+    case goog.events.KeyCodes.SIX:
+    case goog.events.KeyCodes.SEVEN:
+	console.log("here");
 	break;
     }
 };
@@ -108,13 +123,13 @@ trolls.Controller.prototype.findTarget = function(actor) {
 };
 
 trolls.Controller.prototype.findVillagerTarget = function(actor) {
-    if (lib.random(2) == 0) {
+//    if (lib.random(2) == 0) {
 	// 50% chance of troll
 	return this.findClosestTarget_(actor, this.trolls_);
-    } else {
+  //  } else {
 	// 50% chance of hut
-	return this.findClosestTarget_(actor, this.village_.getHuts());
-    }
+//	return this.findClosestTarget_(actor, this.village_.getHuts());
+  //  }
 }
 
 trolls.Controller.prototype.findClosestTarget_ = function(actor, targets) {
@@ -151,7 +166,7 @@ trolls.Controller.prototype.removeHut = function(e) {
     var hut = e.target.targets[0];
     var pos = hut.getPosition();
     this.village_.removeHut(hut);
-    if (lib.random(3) == 0) {
+    if (lib.random(10) == 0) {
 	var power = trolls.data.Power.getRandom();
 	this.village_.addPower(power, pos);
     }
