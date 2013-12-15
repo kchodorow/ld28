@@ -1,4 +1,3 @@
-Add hit points to trolls, villagers, and huts
 Have trolls fight villagers
 Have villagers fight trolls
 Limit dialog distance
@@ -7,10 +6,13 @@ Add stinking cloud
 Fix fireball
 Cluster huts
 Huts get smooshed from afar
-
+Add health drops
+Add troll death
 Multiple levels
+Only inquire about powers you might not want
 Audio
 
+Add facing
 Make cursor correct on hud dialog buttons
 Tutorial
 

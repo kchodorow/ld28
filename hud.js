@@ -19,7 +19,7 @@ trolls.Hud.prototype.getMorale = function() {
 };
 
 trolls.Hud.prototype.inquireAbout = function(power) {
-    var dialog = new lime.Sprite().setSize(300, 200)
+    var dialog = new lime.Sprite().setSize(500, 300)
 	.setFill(trolls.resources.getDialogBg())
 	.setPosition(0, HEIGHT/2);
     var label = lib.label(

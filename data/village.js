@@ -125,6 +125,7 @@ trolls.data.Hut.prototype.smoosh = function(damage) {
 trolls.data.Villager = function(box) {
     lime.Sprite.call(this);
 
+    this.goal_expires_ms_ = new lib.random(3000, 5000);
     this.health_ = 1;
     var pos_x = lib.random(box.left, box.right);
     var pos_y = lib.random(box.top, box.bottom);
@@ -153,9 +154,25 @@ trolls.data.Villager.prototype.smoosh = function(damage) {
     trolls.controller.changeMorale(trolls.resources.MORALE.VILLAGER_SMOOSH);
 };
 
+trolls.data.Villager.prototype.attack = function() {
+    this.runAction(trolls.resources.getVillagerAttack());
+    this.goal_.changeHealth(-1);
+};
+
 // px/ms
 trolls.data.Villager.SPEED = .1;
 
 trolls.data.Villager.prototype.step = function(dt) {
+    if (this.goal_ == null || this.goal_elapsed_ >= this.goal_expires_ms_) {
+	this.goal_ = trolls.controller.findTarget(this);
+	if (this.goal_ == null) {
+	    this.walk_.stop();
+	    this.setFill(trolls.resources.getTroll());
+	    return;
+	}
+	this.goal_elapsed_ = 0;
+    }
+
     this.move(dt);
+    this.goal_elapsed_ += dt;
 };

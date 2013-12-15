@@ -86,8 +86,13 @@ trolls.pickerScene = function() {
 	    .setStroke(2, trolls.resources.DARK_GREEN);
 	slot.createDomElement();
 	goog.style.setStyle(slot.domElement, 'cursor', 'pointer');
+
+	// Troll sprite
+	var doubler = new lime.Sprite().setScale(2, 2);
 	var troll = troll_list[i];
-	slot.appendChild(troll.setPosition(0, -120).setSize(88, 88));
+	doubler.appendChild(troll);
+	slot.appendChild(doubler.setPosition(0, -120));
+
 	var special = false;
 	if (troll.attack_ != 0) {
 	    slot.appendChild(

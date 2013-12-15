@@ -45,8 +45,9 @@ trolls.Troll.prototype.addHealthBar = function() {
     progress_bar.setBackgroundColor(trolls.resources.DARK_GREEN);
     progress_bar.setForegroundColor(trolls.resources.GREEN);
     progress_bar.setDimensions(new goog.math.Size(this.getSize().width, 10));
-    progress_bar.setPosition(0, -LEN*1.5);
+    progress_bar.setPosition(0, -LEN);
     this.appendChild(progress_bar);
+    this.health_bar_ = progress_bar;
 };
 
 trolls.Troll.prototype.setDirection = function(x, y) {
@@ -61,6 +62,7 @@ trolls.Troll.prototype.getLocation = function() {
 };
 
 trolls.Troll.prototype.attack = function() {
+    this.attacking_ = true;
     this.walk_.stop();
     var attack_anim = trolls.resources.getTrollAttack();
     this.runAction(attack_anim);
@@ -72,6 +74,7 @@ trolls.Troll.prototype.attack = function() {
 	    }
 	    troll.goal_.smoosh(trolls.Troll.BASE_ATTACK+troll.attack_);
 	    troll.goal_ = null;
+	    troll.attacking_ = false;
 	});
 };
 
@@ -83,6 +86,11 @@ trolls.Troll.prototype.choose = function() {
 
 trolls.Troll.prototype.unchoose = function() {
     this.removeChild(this.marker_);
+};
+
+trolls.Troll.prototype.changeHealth = function(amount) {
+    this.health_ += amount;
+    this.health_bar_.updateProgress(amount);
 };
 
 trolls.Troll.prototype.distanceToGoal = function() {
@@ -102,9 +110,14 @@ trolls.Troll.prototype.step = function(dt) {
 	return;
     }
 
-    this.move(dt);
-
-    if (this.distanceToGoal() < LEN) {
-	this.attack();
+    if (this.goal_ == null) {
+	this.goal_ = trolls.controller.findTarget(this);
+	if (this.goal_ == null) {
+	    this.walk_.stop();
+	    this.setFill(trolls.resources.getTroll());
+	    return;
+	}
     }
+
+    this.move(dt);
 };
