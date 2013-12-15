@@ -6,6 +6,10 @@ goog.require('lime.ASSETS.trolls.json');
 goog.require('lime.SpriteSheet');
 
 trolls.data.Resources = function() {
+    FONT_COLOR = this.DARK_GREEN;
+    FONT_FAMILY = 'VT323';
+    FONT_SIZE = 36;
+
     this.spritesheet_ = new lime.SpriteSheet(
 	'assets/trolls.png', lime.ASSETS.trolls.json, lime.parser.JSON);
 
@@ -87,7 +91,7 @@ trolls.data.Resources.prototype.getMoraleMeterBg = function() {
 
 // TODO: go to 'urine' yellow as % decreases
 trolls.data.Resources.prototype.getMoraleMeterFg = function(percent) {
-    return this.LIGHT_GREEN;
+    return this.GREEN;
 };
 
 trolls.data.Resources.prototype.getPower = function() {
@@ -108,4 +112,8 @@ trolls.data.Resources.prototype.getFart = function() {
 
 trolls.data.Resources.prototype.getFireball = function() {
     return this.spritesheet_.getFrame('fireball.png');
+};
+
+trolls.data.Resources.prototype.getIdol = function() {
+    return this.spritesheet_.getFrame('idol.png');
 };

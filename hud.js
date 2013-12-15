@@ -67,7 +67,7 @@ trolls.MoraleMeter = function() {
     this.appendChild(inner);
     this.inner_ = inner;
 
-    var label = lib.label('Villager morale');
+    var label = lib.label('Villager morale').setPosition(0, -30);
     this.appendChild(label);
 };
 

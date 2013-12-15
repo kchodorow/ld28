@@ -1,5 +1,7 @@
 goog.provide('trolls.data.Power');
 
+goog.require('lime.animation.Loop');
+
 trolls.data.Power = {};
 
 trolls.data.Power.getRandom = function() {
@@ -9,7 +11,10 @@ trolls.data.Power.getRandom = function() {
 
 trolls.data.Power.BasePower = function() {
     lime.Sprite.call(this);
-    this.setFill(trolls.resources.getPower()).setSize(10, 10);
+    this.setFill(trolls.resources.getPower());
+    var pulse = new lime.animation.Sequence(
+	new lime.animation.ScaleTo(1.2), new lime.animation.ScaleTo(1.0));
+    this.runAction(new lime.animation.Loop(pulse));
     this.id = "Power";
 };
 goog.inherits(trolls.data.Power.BasePower, lime.Sprite);
@@ -95,8 +100,7 @@ goog.inherits(trolls.data.Power.TrollMask, trolls.data.Power.BasePower);
 
 trolls.data.Power.TrollMask.prototype.attachTo = function(troll) {
     troll.appendChild(
-	new lime.Sprite().setFill(trolls.resources.getTrollMask())
-	    .setSize(10, 10).setPosition(0, -10));
+	new lime.Sprite().setFill(trolls.resources.getTrollMask()));
 };
 
 // Make bigger
@@ -143,7 +147,7 @@ trolls.data.Power.Fireball.prototype.attachTo = function(troll) {
 
 trolls.data.Power.Fireball.prototype.attack = function() {
     var fireball = 
-	new lime.Sprite().setFill(trolls.resources.getFireball()).setSize(10, 10);
+	new lime.Sprite().setFill(trolls.resources.getFireball());
     this.appendChild(fireball);
     fireball.runAction(new lime.animation.MoveTo(this.goal_.getPosition()));
     // TODO: on stop

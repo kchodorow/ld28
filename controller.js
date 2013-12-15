@@ -20,10 +20,14 @@ trolls.Controller.prototype.begin = function(troll) {
     this.director_.replaceScene(this.scene_);
 };
 
+// Go to the choose troll screen.
 trolls.Controller.prototype.changeScene = function() {
     this.controlled_.unchoose();
     this.director_.replaceScene(trolls.pickerScene());
     this.actors_ = [];
+    for (var i = 0; i < this.trolls_.length; ++i) {
+	this.trolls_[i].walk_.stop();
+    }
     goog.array.extend(this.actors_, this.trolls_);
     lime.scheduleManager.unschedule(this.step, this);
 }
@@ -40,6 +44,8 @@ trolls.Controller.prototype.createScene = function() {
 
     for (var i = 0; i < this.trolls_.length; i++) {
 	var troll = this.trolls_[i];
+	troll.walk_ = trolls.resources.getTrollWalk();
+	troll.runAction(troll.walk_);
 	troll.setStartingPos(village_size);
 	layer.appendChild(troll);
     }

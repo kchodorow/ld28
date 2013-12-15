@@ -20,7 +20,7 @@ trolls.Troll = function() {
     this.facing_ = new goog.math.Coordinate(1, 0);
     this.move = goog.bind(trolls.Mixins.moveTowards, this);
 
-    this.setSize(40, 40).setFill(trolls.resources.getTroll());
+    this.setFill(trolls.resources.getTroll());
 };
 
 goog.inherits(trolls.Troll, lime.Sprite);
@@ -49,14 +49,23 @@ trolls.Troll.prototype.getLocation = function() {
 };
 
 trolls.Troll.prototype.attack = function() {
-    this.goal_.smoosh();
-    this.goal_ = null;
+    this.walk_.stop();
+    var attack_anim = trolls.resources.getTrollAttack();
+    this.runAction(attack_anim);
+    var troll = this;
+    goog.events.listen(
+	attack_anim, lime.animation.Event.STOP, function(e) {
+	    if (troll.goal_ == null) {
+		return;
+	    }
+	    troll.goal_.smoosh();
+	    troll.goal_ = null;
+	});
 };
 
 trolls.Troll.prototype.choose = function() {
     this.controlled_ = true;
-    this.marker_ = new lime.Sprite().setFill(trolls.resources.getMarker())
-	.setSize(5, 10).setPosition(0, -30);
+    this.marker_ = new lime.Sprite().setFill(trolls.resources.getMarker());
     this.appendChild(this.marker_);
 };
 

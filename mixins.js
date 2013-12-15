@@ -4,6 +4,8 @@ trolls.Mixins.moveTowards = function(dt) {
     if (this.goal_ == null) {
 	this.goal_ = trolls.controller.findTarget(this);
 	if (this.goal_ == null) {
+	    this.walk_.stop();
+	    this.setFill(trolls.resources.getTroll());
 	    return;
 	}
     }

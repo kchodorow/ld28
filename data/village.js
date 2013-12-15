@@ -16,8 +16,7 @@ trolls.data.Village = function(size) {
 	for (var row = this.box_.top; row < this.box_.bottom; row++) {
 	    var grass = new lime.Sprite()
 		.setPosition(col*LEN, row*LEN)
-		.setFill(trolls.resources.getGrass())
-		.setSize(LEN, LEN);
+		.setFill(trolls.resources.getGrass());
 	    grass.id = "Grass";
 	    this.board_[col][row] = grass;
 	    this.appendChild(grass);
@@ -39,7 +38,7 @@ trolls.data.Village.prototype.addHuts = function() {
     for (var i = 0; i < num_huts; i++) {
 	var hut = new trolls.data.Hut(this.box_);
 	if (goog.DEBUG) {
-	    hut.appendChild(lib.label(i));
+	    //hut.appendChild(lib.label(i));
 	    hut.num_ = i;
 	}
 	if (this.board_[hut.loc_.x][hut.loc_.y].id != "Grass") {
@@ -97,8 +96,7 @@ trolls.data.Hut = function(box) {
     var y = lib.random(box.top, box.bottom);
     this.loc_ = new goog.math.Coordinate(x, y);
     this.setAnchorPoint(.5, 1).setPosition(x*LEN, y*LEN+LEN/2)
-	.setFill(trolls.resources.getHut())
-	.setSize(LEN, LEN);
+	.setFill(trolls.resources.getHut());
 };
 
 goog.inherits(trolls.data.Hut, lime.Sprite);
@@ -120,11 +118,14 @@ trolls.data.Villager = function(box) {
     var pos_x = lib.random(box.left, box.right);
     var pos_y = lib.random(box.top, box.bottom);
     this.loc_ = new goog.math.Coordinate(pos_x, pos_y);
-    this.setSize(15, 15).setFill(trolls.resources.getVillager())
+    this.setFill(trolls.resources.getVillager())
 	.setPosition(pos_x*LEN, pos_y*LEN);
     this.goal_ = null;
     this.speed_ = trolls.data.Villager.SPEED;
     this.move = goog.bind(trolls.Mixins.moveTowards, this);
+
+    this.walk_ = trolls.resources.getVillagerWalk();
+    this.runAction(this.walk_);
 };
 
 goog.inherits(trolls.data.Villager, lime.Sprite);
