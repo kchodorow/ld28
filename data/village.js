@@ -155,7 +155,20 @@ trolls.data.Villager.prototype.smoosh = function(damage) {
 };
 
 trolls.data.Villager.prototype.attack = function() {
-    this.runAction(trolls.resources.getVillagerAttack());
+    this.attacking_ = true;
+    if (this.goal_.id == 'Hut') {
+	return;
+    }
+    var villager = this;
+    var action = trolls.resources.getVillagerAttack();
+    this.runAction(action);
+    goog.events.listen(
+	action, lime.animation.Event.STOP,
+	function() {
+	    villager.attacking_ = false;
+	    villager.goal_ = null;
+	});
+
     this.goal_.changeHealth(-1);
 };
 
@@ -164,13 +177,14 @@ trolls.data.Villager.SPEED = .1;
 
 trolls.data.Villager.prototype.step = function(dt) {
     if (this.goal_ == null || this.goal_elapsed_ >= this.goal_expires_ms_) {
-	this.goal_ = trolls.controller.findTarget(this);
+	this.goal_ = trolls.controller.findVillagerTarget(this);
 	if (this.goal_ == null) {
 	    this.walk_.stop();
-	    this.setFill(trolls.resources.getTroll());
+	    this.setFill(trolls.resources.getVillager());
 	    return;
 	}
 	this.goal_elapsed_ = 0;
+	this.attacking_ = false;
     }
 
     this.move(dt);

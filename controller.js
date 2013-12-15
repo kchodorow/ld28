@@ -21,7 +21,7 @@ trolls.Controller.prototype.begin = function(troll) {
 };
 
 // Go to the choose troll screen.
-trolls.Controller.prototype.changeScene = function() {
+trolls.Controller.prototype.endScene = function() {
     this.controlled_.unchoose();
     this.director_.replaceScene(trolls.pickerScene());
     this.actors_ = [];
@@ -96,13 +96,26 @@ trolls.Controller.prototype.keyup = function(controller, e) {
 };
 
 trolls.Controller.prototype.findTarget = function(actor) {
-    if (actor.id == 'Troll') {
-	return this.findClosestTarget_(actor, this.village_.getHuts());
-    } else {
-	return this.findClosestTarget_(actor, this.trolls_);
+    var villagers = this.village_.getVillagers();
+    var num = villagers.length;
+    for (var i = 0; i < num; ++i) {
+	if (goog.math.Coordinate.distance(
+	    villagers[i].getPosition(), actor.getPosition()) < LEN) {
+	    return villagers[i];
+	}
     }
     return null;
 };
+
+trolls.Controller.prototype.findVillagerTarget = function(actor) {
+    if (lib.random(2) == 0) {
+	// 50% chance of troll
+	return this.findClosestTarget_(actor, this.trolls_);
+    } else {
+	// 50% chance of hut
+	return this.findClosestTarget_(actor, this.village_.getHuts());
+    }
+}
 
 trolls.Controller.prototype.findClosestTarget_ = function(actor, targets) {
     var min_distance = WIDTH*HEIGHT;
@@ -180,6 +193,6 @@ trolls.Controller.prototype.step = function(dt) {
     // in %
     var THRESHOLD = 5;
     if (this.hud_.getMorale() < THRESHOLD) {
-	this.changeScene();
+	this.endScene();
     }
 };

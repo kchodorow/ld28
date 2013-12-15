@@ -62,6 +62,10 @@ trolls.Troll.prototype.getLocation = function() {
 };
 
 trolls.Troll.prototype.attack = function() {
+    if (this.distanceToGoal() > LEN) {
+	return;
+    }
+
     this.attacking_ = true;
     this.walk_.stop();
     var attack_anim = trolls.resources.getTrollAttack();
@@ -91,6 +95,11 @@ trolls.Troll.prototype.unchoose = function() {
 trolls.Troll.prototype.changeHealth = function(amount) {
     this.health_ += amount;
     this.health_bar_.updateProgress(amount);
+
+    if (this.health_ == 0) {
+	this.dead_ = true;
+	this.runAction(new lime.animation.FadeTo(0));
+    }
 };
 
 trolls.Troll.prototype.distanceToGoal = function() {
@@ -102,6 +111,10 @@ trolls.Troll.prototype.distanceToGoal = function() {
 };
 
 trolls.Troll.prototype.step = function(dt) {
+    if (this.dead_) {
+	return;
+    }
+
     if (this.controlled_) {
 	var distance = trolls.Troll.SPEED * dt;
 	this.setPosition(
