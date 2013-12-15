@@ -39,6 +39,7 @@ trolls.data.Resources = function() {
 
 trolls.data.Resources.prototype.MORALE = {
     HUT_SMOOSH: -1,
+    VILLAGER_SMOOSH: -1,
     TROLL_HURT: 1
 };
 
@@ -115,5 +116,5 @@ trolls.data.Resources.prototype.getFireball = function() {
 };
 
 trolls.data.Resources.prototype.getIdol = function() {
-    return this.spritesheet_.getFrame('idol.png');
+    return this.spritesheet_.getFrame('idol1.png');
 };

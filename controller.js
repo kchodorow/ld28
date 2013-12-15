@@ -144,6 +144,16 @@ trolls.Controller.prototype.removeHut = function(e) {
     }
 };
 
+trolls.Controller.prototype.removeVillager = function(e) {
+    var hut = e.target.targets[0];
+    var pos = hut.getPosition();
+    this.village_.removeVillager(hut);
+    if (lib.random(3) == 0) {
+	var power = trolls.data.Power.getRandom();
+	this.village_.addPower(power, pos);
+    }
+};
+
 trolls.Controller.prototype.addPower = function(power) {
     power.attachTo(this.controlled_);
 };

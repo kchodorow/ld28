@@ -41,27 +41,27 @@ trolls.start = function(){
     }
     
     director.makeMobileWebAppCapable();
+//    director.replaceScene(trolls.startScene());
     director.replaceScene(trolls.pickerScene());
 };
 
 trolls.startScene = function() {
-    var scene = lime.Scene();
+    var scene = new lime.Scene();
     var layer = new lime.Sprite().setSize(WIDTH, HEIGHT)
-	.setPosition(0, HEIGHT/2).setAnchorPoint(0, .5)
-	.setFill(trolls.resources.LIGHT_GREEN);
+	.setPosition(0, HEIGHT/2).setAnchorPoint(0, .5);
 
     for (var x = 0; x < 9; ++x) {
 	for (var y = 0; y < 7; ++y) {
-	    var grass = lime.Sprite().setFill(trolls.resources.getGrass())
+	    var grass = new lime.Sprite().setFill(trolls.resources.getGrass())
 		.setPosition(x*LEN, y*LEN);
 
 	    if (x == 4 && y == 3) {
 		grass.appendChild(trolls.resources.getIdol());
 	    }
-	    if (y == 2 && x >= 2 && x <= 6) {
-		grass.appendChild(trolls.controller.trolls_[x-2]);
-	    }
-	    this.appendChild(grass);
+//	    if (y == 2 && x >= 2 && x <= 6) {
+//		grass.appendChild(trolls.controller.trolls_[x-2]);
+//	    }
+	    layer.appendChild(grass);
 	}
     }
     scene.appendChild(layer);
@@ -87,7 +87,7 @@ trolls.pickerScene = function() {
 	slot.createDomElement();
 	goog.style.setStyle(slot.domElement, 'cursor', 'pointer');
 	var troll = troll_list[i];
-	slot.appendChild(troll.setPosition(0, -130).setSize(88, 88));
+	slot.appendChild(troll.setPosition(0, -120).setSize(88, 88));
 	var special = false;
 	if (troll.attack_ != 0) {
 	    slot.appendChild(

@@ -55,6 +55,11 @@ trolls.data.Village.prototype.removeHut = function(hut) {
     goog.array.remove(this.huts_, hut);
 };
 
+trolls.data.Village.prototype.removeVillager = function(hut) {
+    this.removeChild(hut);
+    goog.array.remove(this.villagers_, hut);
+};
+
 trolls.data.Village.prototype.addVillagers = function() {
     this.villagers_ = [];
     var MIN_VILLAGERS = 20;
@@ -92,6 +97,7 @@ trolls.data.Village.prototype.getPowerUps = function() {
 trolls.data.Hut = function(box) {
     lime.Sprite.call(this);
 
+    this.health_ = 20;
     var x = lib.random(box.left, box.right);
     var y = lib.random(box.top, box.bottom);
     this.loc_ = new goog.math.Coordinate(x, y);
@@ -103,18 +109,23 @@ goog.inherits(trolls.data.Hut, lime.Sprite);
 
 trolls.data.Hut.prototype.id = "Hut";
 
-trolls.data.Hut.prototype.smoosh = function() {
-    var action = new lime.animation.ScaleTo(1, 0)
-    this.runAction(action);
-    goog.events.listen(
-	action, lime.animation.Event.STOP,
-	goog.bind(trolls.controller.removeHut, trolls.controller));
-    trolls.controller.changeMorale(trolls.resources.MORALE.HUT_SMOOSH);
+trolls.data.Hut.prototype.smoosh = function(damage) {
+    this.health_ -= damage;
+    this.appendChild(lib.pointLabel(-damage));
+    if (this.health_ <= 0) {
+	var action = new lime.animation.ScaleTo(1, 0)
+	this.runAction(action);
+	goog.events.listen(
+	    action, lime.animation.Event.STOP,
+	    goog.bind(trolls.controller.removeHut, trolls.controller));
+	trolls.controller.changeMorale(trolls.resources.MORALE.HUT_SMOOSH);
+    }
 };
 
 trolls.data.Villager = function(box) {
     lime.Sprite.call(this);
 
+    this.health_ = 1;
     var pos_x = lib.random(box.left, box.right);
     var pos_y = lib.random(box.top, box.bottom);
     this.loc_ = new goog.math.Coordinate(pos_x, pos_y);
@@ -129,6 +140,18 @@ trolls.data.Villager = function(box) {
 };
 
 goog.inherits(trolls.data.Villager, lime.Sprite);
+
+trolls.data.Villager.prototype.smoosh = function(damage) {
+    this.health_ -= damage;
+    this.appendChild(lib.pointLabel(-damage));
+    // Always 1-hit death
+    var action = new lime.animation.ScaleTo(1, 0)
+    this.runAction(action);
+    goog.events.listen(
+	action, lime.animation.Event.STOP,
+	goog.bind(trolls.controller.removeVillager, trolls.controller));
+    trolls.controller.changeMorale(trolls.resources.MORALE.VILLAGER_SMOOSH);
+};
 
 // px/ms
 trolls.data.Villager.SPEED = .1;
