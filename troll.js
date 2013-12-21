@@ -1,7 +1,9 @@
 goog.provide('trolls.Troll');
 
-goog.require('trolls.Mixins');
+goog.require('lib.Debug');
+goog.require('lib.Direction');
 goog.require('lib.ProgressBar');
+goog.require('trolls.Mixins');
 
 trolls.Troll = function() {
     lime.Sprite.call(this);
@@ -23,6 +25,8 @@ trolls.Troll = function() {
 
     this.setFill(trolls.resources.getTroll());
     this.addHealthBar();
+    lib.Direction.attach(this);
+    lib.Debug.attach(this);
 };
 
 goog.inherits(trolls.Troll, lime.Sprite);

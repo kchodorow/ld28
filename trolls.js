@@ -20,6 +20,7 @@ goog.require('trolls.data.Resources');
 goog.require('trolls.data.Stats');
 goog.require('trolls.data.Tutorial');
 goog.require('trolls.data.Village');
+goog.require('trolls.scenes.Intro');
 
 var WIDTH = 1024;
 var HEIGHT = 768;
@@ -43,29 +44,6 @@ trolls.start = function(){
     director.makeMobileWebAppCapable();
 //    director.replaceScene(trolls.startScene());
     director.replaceScene(trolls.pickerScene());
-};
-
-trolls.startScene = function() {
-    var scene = new lime.Scene();
-    var layer = new lime.Sprite().setSize(WIDTH, HEIGHT)
-	.setPosition(0, HEIGHT/2).setAnchorPoint(0, .5);
-
-    for (var x = 0; x < 9; ++x) {
-	for (var y = 0; y < 7; ++y) {
-	    var grass = new lime.Sprite().setFill(trolls.resources.getGrass())
-		.setPosition(x*LEN, y*LEN);
-
-	    if (x == 4 && y == 3) {
-		grass.appendChild(trolls.resources.getIdol());
-	    }
-//	    if (y == 2 && x >= 2 && x <= 6) {
-//		grass.appendChild(trolls.controller.trolls_[x-2]);
-//	    }
-	    layer.appendChild(grass);
-	}
-    }
-    scene.appendChild(layer);
-    return scene;
 };
 
 trolls.pickerScene = function() {
