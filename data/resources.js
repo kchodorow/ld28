@@ -115,6 +115,10 @@ trolls.data.Resources.prototype.getFireball = function() {
     return this.spritesheet_.getFrame('fireball.png');
 };
 
-trolls.data.Resources.prototype.getIdol = function() {
-    return this.spritesheet_.getFrame('idol1.png');
+trolls.data.Resources.prototype.getIdol = function(opt_angry) {
+    if (opt_angry) {
+	return this.spritesheet_.getFrame('idol2.png');
+    } else {
+	return this.spritesheet_.getFrame('idol1.png');
+    }
 };
