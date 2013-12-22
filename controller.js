@@ -4,6 +4,7 @@ goog.require('goog.events.KeyCodes');
 goog.require('lime.scheduleManager');
 
 goog.require('trolls.data.Power');
+goog.require('trolls.scenes.Main');
 
 trolls.Controller = function(director) {
     this.director_ = director;
@@ -13,7 +14,7 @@ trolls.Controller = function(director) {
 
 trolls.Controller.prototype.begin = function(troll) {
     this.choose(troll);
-    this.scene_ = this.createScene();
+    this.scene_ = new trolls.scenes.Main();
     goog.events.listen(this.scene_, ['keydown'], goog.partial(this.keydown, this));
     goog.events.listen(this.scene_, ['keyup'], goog.partial(this.keyup, this));
     lime.scheduleManager.schedule(this.step, this);
@@ -30,33 +31,6 @@ trolls.Controller.prototype.endScene = function() {
     }
     goog.array.extend(this.actors_, this.trolls_);
     lime.scheduleManager.unschedule(this.step, this);
-}
-
-trolls.Controller.prototype.createScene = function() {
-    var scene = new lime.Scene();
-    var layer = new lime.Layer().setSize(WIDTH, HEIGHT).setAnchorPoint(.5, .5)
-	.setPosition(WIDTH/2, HEIGHT/2);
-
-    var village_size = new goog.math.Size(20, 15);
-    var village = new trolls.data.Village(village_size);
-    this.addVillage(village);
-    layer.appendChild(village);
-
-    for (var i = 0; i < this.trolls_.length; i++) {
-	var troll = this.trolls_[i];
-	troll.walk_ = trolls.resources.getTrollWalk();
-	troll.runAction(troll.walk_);
-	troll.setStartingPos(village_size);
-	layer.appendChild(troll);
-    }
-
-    scene.appendChild(layer);
-    var hud = new trolls.Hud();
-    hud.setPosition(WIDTH/2, 100);
-    this.addHud(hud);
-    scene.appendChild(hud);
-
-    return scene;
 };
 
 trolls.Controller.prototype.keydown = function(controller, e) {
@@ -101,7 +75,10 @@ trolls.Controller.prototype.keydown = function(controller, e) {
     case goog.events.KeyCodes.FIVE:
     case goog.events.KeyCodes.SIX:
     case goog.events.KeyCodes.SEVEN:
-	console.log("here");
+	var power = 
+	    new trolls.data.Power.types_[
+		e.event.keyCode - goog.events.KeyCodes.ZERO]();
+	power.attachTo(controller.controlled_);
 	break;
     }
 };
@@ -111,21 +88,21 @@ trolls.Controller.prototype.keyup = function(controller, e) {
 };
 
 trolls.Controller.prototype.findTarget = function(actor) {
-    var villagers = this.village_.getVillagers();
-    var num = villagers.length;
-    for (var i = 0; i < num; ++i) {
-	if (goog.math.Coordinate.distance(
-	    villagers[i].getPosition(), actor.getPosition()) < LEN) {
-	    return villagers[i];
-	}
-    }
-    return null;
+    // var villagers = this.village_.getVillagers();
+    // var num = villagers.length;
+    // for (var i = 0; i < num; ++i) {
+    // 	if (goog.math.Coordinate.distance(
+    // 	    villagers[i].getPosition(), actor.getPosition()) < LEN) {
+    // 	    return villagers[i];
+    // 	}
+    // }
+    // return null;
 };
 
 trolls.Controller.prototype.findVillagerTarget = function(actor) {
 //    if (lib.random(2) == 0) {
 	// 50% chance of troll
-	return this.findClosestTarget_(actor, this.trolls_);
+//	return this.findClosestTarget_(actor, this.trolls_);
   //  } else {
 	// 50% chance of hut
 //	return this.findClosestTarget_(actor, this.village_.getHuts());
@@ -133,17 +110,17 @@ trolls.Controller.prototype.findVillagerTarget = function(actor) {
 }
 
 trolls.Controller.prototype.findClosestTarget_ = function(actor, targets) {
-    var min_distance = WIDTH*HEIGHT;
-    var target = null;
-    for (var i = 0; i < targets.length; ++i) {
-	var distance = goog.math.Coordinate.distance(
-	    targets[i].getPosition(), actor.getPosition());
-	if (distance < min_distance) {
-	    min_distance = distance;
-	    target = targets[i];
-	}
-    }
-    return target;
+    // var min_distance = WIDTH*HEIGHT;
+    // var target = null;
+    // for (var i = 0; i < targets.length; ++i) {
+    // 	var distance = goog.math.Coordinate.distance(
+    // 	    targets[i].getPosition(), actor.getPosition());
+    // 	if (distance < min_distance) {
+    // 	    min_distance = distance;
+    // 	    target = targets[i];
+    // 	}
+    // }
+    // return target;
 };
 
 trolls.Controller.prototype.choose = function(troll) {
@@ -206,8 +183,8 @@ trolls.Controller.prototype.step = function(dt) {
     }
 
     // in %
-    var THRESHOLD = 5;
-    if (this.hud_.getMorale() < THRESHOLD) {
-	this.endScene();
-    }
+    // var THRESHOLD = 5;
+    // if (this.hud_.getMorale() < THRESHOLD) {
+    // 	this.endScene();
+    // }
 };
