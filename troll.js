@@ -8,6 +8,12 @@ goog.require('trolls.Mixins');
 trolls.Troll = function() {
     lime.Sprite.call(this);
 
+    var first_idx = lib.random(trolls.Troll.given_name_.length);
+    var last_idx = lib.random(trolls.Troll.suffix_.length);
+    this.name_ = trolls.Troll.given_name_[first_idx]+" "+
+	trolls.Troll.suffix_[last_idx]
+    goog.array.removeAt(trolls.Troll.given_name_, first_idx);
+    goog.array.removeAt(trolls.Troll.suffix_, last_idx);
     this.health_ = 100;
     this.goal_ = null;
 
@@ -36,6 +42,10 @@ trolls.Troll.prototype.id = 'Troll';
 // px/ms
 trolls.Troll.SPEED = .05;
 trolls.Troll.BASE_ATTACK = 3;
+
+trolls.Troll.prototype.getName = function() {
+    return this.name_;
+};
 
 trolls.Troll.prototype.setStartingPos = function(size) {
     this.loc_ = new goog.math.Coordinate(
@@ -139,3 +149,16 @@ trolls.Troll.prototype.step = function(dt) {
 
     this.move(dt);
 };
+
+// Names
+trolls.Troll.given_name_ = [
+    "Grog", "Ogg", "Brog", "Ploog", "Zorg", "Zorn", "Frampton", "Mush-Nose",
+    "Froog", "Blatt", "Poob", "Rawr", "Drob", "Woob"
+];
+
+trolls.Troll.suffix_ = [
+    "the Destroyer", "the Stinky", "Rocknose", "the Hairy", "Galumph",
+    "Hammerfist", "the Tiny", "the Angry", "the Incontinent", "Bloodfist",
+    "Headbutt", "the Butthead", "of the Swamp", "Poisonpants", "Mudface",
+    "the Clumsy", "Thump-Thump"
+];
