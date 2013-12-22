@@ -1,27 +1,17 @@
 goog.provide('trolls.data.Village');
 
 goog.require('lib');
+goog.require('lib.collision.GeoHash');
 goog.require('trolls.Mixins');
+goog.require('trolls.Villager');
 
 // Create a random village.
-trolls.data.Village = function(size) {
+trolls.data.Village = function() {
     lime.Sprite.call(this);
 
-    this.box_ = new goog.math.Box(
-	-size.height/2, size.width/2, size.height/2, -size.width/2);
-
-    this.board_ = {};
-    for (var col = this.box_.left; col < this.box_.right; col++) {
-	this.board_[col] = {};
-	for (var row = this.box_.top; row < this.box_.bottom; row++) {
-	    var grass = new lime.Sprite()
-		.setPosition(col*LEN, row*LEN)
-		.setFill(trolls.resources.getGrass());
-	    grass.id = "Grass";
-	    this.board_[col][row] = grass;
-	    this.appendChild(grass);
-	}
-    }
+    this.setSize(WIDTH, HEIGHT);
+    this.map_ = new lib.collision.GeoHash(
+	new goog.math.Box(-HEIGHT/2, WIDTH/2, HEIGHT/2, -WIDTH/2));
     this.power_ups_ = [];
 
     this.addHuts();
@@ -32,22 +22,74 @@ goog.inherits(trolls.data.Village, lime.Sprite);
 
 trolls.data.Village.prototype.addHuts = function() {
     this.huts_ = [];
-    var MIN_HUTS = 4;
-    var MAX_HUTS = 20;
+    var square = new lime.Sprite().setStroke(3, trolls.resources.DARK_GREEN)
+	.setPosition(100, 0).setSize(600, 500);
+
+    var size = square.getSize();
+    var pos = square.getPosition();
+    var hub = new goog.math.Coordinate(
+	lib.random(pos.x-size.width/2, pos.x+size.width/2),
+	lib.random(pos.y-size.height/2, pos.y+size.height/2));
+
+    var hub_hut = new trolls.data.Hut(hub);
+    this.appendChild(hub_hut);
+
+    var MIN_HUTS = 7, MAX_HUTS = 20;
     var num_huts = lib.random(MIN_HUTS, MAX_HUTS);
-    for (var i = 0; i < num_huts; i++) {
-	var hut = new trolls.data.Hut(this.box_);
-	if (goog.DEBUG) {
-	    //hut.appendChild(lib.label(i));
-	    hut.num_ = i;
-	}
-	if (this.board_[hut.loc_.x][hut.loc_.y].id != "Grass") {
+    this.addSpokeHuts_(hub_hut.getPosition(), 1, num_huts, square);
+};
+
+// Given a "hub" at pos, create spoke huts.
+// @param hub goog.math.Coordinate The position of the hub.
+// @param num number The current number of huts.
+// @param max number The max number of huts.
+// @param square lime.Sprite The box that the village must be in.
+trolls.data.Village.prototype.addSpokeHuts_ = function(hub, num, max, square) {
+    if (num >= max) {
+	return num;
+    }
+
+    // Create huts as "spokes" around a hub hut.
+    var MIN_SPOKES = 2, MAX_SPOKES = 7;
+    var num_spokes = lib.random(MIN_SPOKES, MAX_SPOKES);
+    var angle = 360/num_spokes;
+    // Start at a random offset.
+    var offset = lib.random(180);
+    var MIN_DIST = 2*LEN, MAX_DIST = 3*LEN, JITTER = LEN/2;
+
+    var jitter = function() {
+	return lib.random(JITTER);
+    };
+
+    for (var i = 0; num < max && i < num_spokes; i++, offset += angle) {
+	var dist = lib.random(MIN_DIST, MAX_DIST);
+	var pos = new goog.math.Coordinate(
+	    hub.x+Math.cos(goog.math.toRadians(offset))*dist+jitter(),
+	    hub.y+Math.sin(goog.math.toRadians(offset))*dist+jitter());
+
+	if (!square.getFrame().contains(pos) || this.hasNearbyHuts_(pos)) {
 	    continue;
 	}
-	this.board_[hut.loc_.x][hut.loc_.y] = hut;
-	this.huts_.push(hut);
+
+	var hut = new trolls.data.Hut(pos);
+	lib.Debug.attach(hut);
+	this.map_.add(hut);
 	this.appendChild(hut);
+	num++;
+
+	if (lib.random(max-num) != 0) {
+	    num = this.addSpokeHuts_(hut.getPosition(), num, max, square);
+	}
     }
+    return num;
+};
+
+// Checks if a hut has anything else near it.
+trolls.data.Village.prototype.hasNearbyHuts_ = function(pos) {
+    var MIN_DIST = 2*LEN;
+    var box = new goog.math.Box(pos.y-MIN_DIST, pos.x+MIN_DIST, pos.y+MIN_DIST, pos.x-MIN_DIST);
+    var results = this.map_.findInBox(box);
+    return results.length != 0;
 };
 
 trolls.data.Village.prototype.removeHut = function(hut) {
@@ -62,19 +104,15 @@ trolls.data.Village.prototype.removeVillager = function(hut) {
 
 trolls.data.Village.prototype.addVillagers = function() {
     this.villagers_ = [];
-    var MIN_VILLAGERS = 20;
-    var MAX_VILLAGERS = 50;
-    var num_villagers = lib.random(MIN_VILLAGERS, MAX_VILLAGERS);
-    for (var i = 0; i < num_villagers; ++i) {
-	var villager = new trolls.data.Villager(this.box_);
-	this.villagers_.push(villager);
-	this.appendChild(villager);
-
-	if (goog.DEBUG) {
-//	    villager.appendChild(lib.label(i));
-	    villager.num_ = i;
-	}
-    }
+    // var MIN_VILLAGERS = 20;
+    // var MAX_VILLAGERS = 50;
+    // var num_villagers = lib.random(MIN_VILLAGERS, MAX_VILLAGERS);
+    // for (var i = 0; i < num_villagers; ++i) {
+    // 	var villager = new trolls.Villager(this.box_);
+    // 	this.villagers_.push(villager);
+    // 	lib.Debug.attach(villager);
+    // 	this.appendChild(villager);
+    // }
 };
 
 trolls.data.Village.prototype.getVillagers = function() {
@@ -99,14 +137,11 @@ trolls.data.Village.prototype.getPowerUps = function() {
     return this.power_ups_;
 }
 
-trolls.data.Hut = function(box) {
+trolls.data.Hut = function(pos) {
     lime.Sprite.call(this);
 
     this.health_ = 20;
-    var x = lib.random(box.left, box.right);
-    var y = lib.random(box.top, box.bottom);
-    this.loc_ = new goog.math.Coordinate(x, y);
-    this.setAnchorPoint(.5, 1).setPosition(x*LEN, y*LEN+LEN/2)
+    this.setAnchorPoint(.5, 1).setPosition(pos)
 	.setFill(trolls.resources.getHut());
 };
 
@@ -125,82 +160,4 @@ trolls.data.Hut.prototype.smoosh = function(damage) {
 	    goog.bind(trolls.controller.removeHut, trolls.controller));
 	trolls.controller.changeMorale(trolls.resources.MORALE.HUT_SMOOSH);
     }
-};
-
-trolls.data.Villager = function(box) {
-    lime.Sprite.call(this);
-
-    this.goal_expires_ms_ = new lib.random(3000, 5000);
-    this.health_ = 1;
-    var pos_x = lib.random(box.left, box.right);
-    var pos_y = lib.random(box.top, box.bottom);
-    this.loc_ = new goog.math.Coordinate(pos_x, pos_y);
-    this.setFill(trolls.resources.getVillager())
-	.setPosition(pos_x*LEN, pos_y*LEN);
-    this.goal_ = null;
-    this.speed_ = trolls.data.Villager.SPEED;
-    this.move = goog.bind(trolls.Mixins.moveTowards, this);
-
-    this.walk_ = trolls.resources.getVillagerWalk();
-    this.runAction(this.walk_);
-};
-
-goog.inherits(trolls.data.Villager, lime.Sprite);
-
-trolls.data.Villager.prototype.smoosh = function(damage) {
-    this.health_ -= damage;
-    this.dead_ = true;
-    this.appendChild(lib.pointLabel(-damage));
-    // Always 1-hit death
-    var action = new lime.animation.ScaleTo(1, 0)
-    this.runAction(action);
-    goog.events.listen(
-	action, lime.animation.Event.STOP,
-	goog.bind(trolls.controller.removeVillager, trolls.controller));
-    trolls.controller.changeMorale(trolls.resources.MORALE.VILLAGER_SMOOSH);
-};
-
-trolls.data.Villager.prototype.attack = function() {
-    this.attacking_ = true;
-    if (this.goal_.id != 'Troll') {
-	return;
-    }
-    var villager = this;
-    var action = trolls.resources.getVillagerAttack();
-    this.runAction(action);
-    goog.events.listen(
-	action, lime.animation.Event.STOP,
-	function() {
-	    if (villager.dead_) {
-		return;
-	    }
-	    villager.attacking_ = false;
-	    var diff = goog.math.Coordinate.difference(
-		villager.getPosition(), villager.goal_.getPosition());
-	    var dummy = new lime.Node().setPosition(
-		villager.getPosition().clone().translate(diff.scale(3)));
-	    villager.goal_ = dummy;
-	    this.attacking_ = false;
-	});
-
-    this.goal_.changeHealth(-1);
-};
-
-// px/ms
-trolls.data.Villager.SPEED = .1;
-
-trolls.data.Villager.prototype.step = function(dt) {
-    if (this.goal_ == null || this.goal_elapsed_ >= this.goal_expires_ms_) {
-	this.goal_ = trolls.controller.findVillagerTarget(this);
-	if (this.goal_ == null) {
-	    this.walk_.stop();
-	    this.setFill(trolls.resources.getVillager());
-	    return;
-	}
-	this.goal_elapsed_ = 0;
-	this.attacking_ = false;
-    }
-
-    this.move(dt);
-    this.goal_elapsed_ += dt;
 };
