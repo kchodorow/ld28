@@ -24,10 +24,10 @@ trolls.Troll = function() {
     this.speed_ = trolls.Troll.SPEED;
 
     // Movement
-    this.controlled_ = false;
     this.direction_ = new goog.math.Coordinate(0, 0);
     this.facing_ = new goog.math.Coordinate(1, 0);
     this.move = goog.bind(trolls.Mixins.moveTowards, this);
+    this.step = this.uncontrolledStep;
 
     this.setFill(trolls.resources.getTroll());
     this.addHealthBar();
@@ -47,18 +47,11 @@ trolls.Troll.prototype.getName = function() {
     return this.name_;
 };
 
-trolls.Troll.prototype.setStartingPos = function(size) {
-    this.loc_ = new goog.math.Coordinate(
-	lib.random(-size.width/2, -size.width/2+5), 
-	lib.random(-size.height/2, size.height/2));
-    this.setPosition(this.loc_.x*LEN, this.loc_.y*LEN);
-}
-
 trolls.Troll.prototype.addHealthBar = function() {
     var progress_bar = new lib.ProgressBar();
     progress_bar.setBackgroundColor(trolls.resources.DARK_GREEN);
     progress_bar.setForegroundColor(trolls.resources.GREEN);
-    progress_bar.setDimensions(new goog.math.Size(this.getSize().width, 10));
+    progress_bar.setDimensions(new goog.math.Size(this.getSize().width, 6));
     progress_bar.setPosition(0, -LEN);
     this.appendChild(progress_bar);
     this.health_bar_ = progress_bar;
@@ -75,10 +68,6 @@ trolls.Troll.prototype.startWalking = function() {
     this.walk_ = trolls.resources.getTrollWalk();
     this.runAction(this.walk_);
     return this;
-};
-
-trolls.Troll.prototype.getLocation = function() {
-    return this.loc_;
 };
 
 trolls.Troll.prototype.attack = function() {
@@ -103,14 +92,15 @@ trolls.Troll.prototype.attack = function() {
 };
 
 trolls.Troll.prototype.choose = function() {
-    this.controlled_ = true;
     this.marker_ = new lime.Circle().setSize(LEN, LEN).setOpacity(.2)
 	.setFill(trolls.resources.RED);
     this.appendChild(this.marker_);
+    this.step = this.controlledStep;
 };
 
 trolls.Troll.prototype.unchoose = function() {
     this.removeChild(this.marker_);
+    this.step = this.uncontrolledStep;
 };
 
 trolls.Troll.prototype.changeHealth = function(amount) {
@@ -131,29 +121,29 @@ trolls.Troll.prototype.distanceToGoal = function() {
 	this.getPosition(), this.goal_.getPosition());
 };
 
-trolls.Troll.prototype.step = function(dt) {
-    if (this.dead_) {
-	return;
-    }
+trolls.Troll.prototype.controlledStep = function(dt) {
+    var distance = trolls.Troll.SPEED * dt;
+    this.setPosition(
+	this.getPosition().translate(
+	    distance*this.direction_.x, distance*this.direction_.y));
+    return;
+};
 
-    if (this.controlled_) {
-	var distance = trolls.Troll.SPEED * dt;
-	this.setPosition(
-	    this.getPosition().translate(
-		distance*this.direction_.x, distance*this.direction_.y));
+trolls.Troll.prototype.uncontrolledStep = function(dt) {
+    if (this.dead_) {
 	return;
     }
 
     if (this.goal_ == null) {
 	this.goal_ = trolls.controller.findTarget(this);
 	if (this.goal_ == null) {
-	    // this.walk_.stop();
-	    // this.setFill(trolls.resources.getTroll());
-	    // return;
+	    this.walk_.stop();
+	    this.setFill(trolls.resources.getTroll());
+	    return;
 	}
     }
 
-//    this.move(dt);
+    this.move(dt);
 };
 
 // Names
