@@ -20,10 +20,10 @@ trolls.scenes.Main = function() {
 	.setBoundingBox(new goog.math.Box(-250, -100, 100, -400))
 	.setMap(trolls.map).generate();
 
-//    var hud = new trolls.Hud();
-//    hud.setPosition(WIDTH/2, 100);
-//    this.addHud(hud);
-//    this.appendChild(hud);
+    var hud = new trolls.Hud();
+    hud.setPosition(WIDTH/2, 100);
+    trolls.controller.addHud(hud);
+    this.appendChild(hud);
 };
 
 goog.inherits(trolls.scenes.Main, lime.Scene);
