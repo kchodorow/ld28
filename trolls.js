@@ -45,4 +45,8 @@ trolls.start = function(){
     director.replaceScene(new trolls.scenes.Intro());
 };
 
+trolls.getTroll = function(i) {
+    return trolls.controller.trolls_[i];
+};
+
 goog.exportSymbol('trolls.start', trolls.start);

@@ -11,7 +11,8 @@ trolls.scenes.Intro = function() {
     lime.Scene.call(this);
 
     // Add background.
-    var bg = new lime.Sprite().setSize(WIDTH, HEIGHT).setPosition(WIDTH/2, HEIGHT/2);
+    var bg = new lime.Sprite().setSize(WIDTH, HEIGHT)
+	.setPosition(WIDTH/2, HEIGHT/2);
     lib.style.setBackgroundFrame(bg, trolls.resources.getGrass());
 
     // Add evil god.
@@ -21,8 +22,10 @@ trolls.scenes.Intro = function() {
     bg.appendChild(trolls.controller.trolls_[0].setPosition(-122, -10));
     bg.appendChild(trolls.controller.trolls_[1].setPosition(-78, -96));
     bg.appendChild(trolls.controller.trolls_[2].setPosition(0, -124));
-    bg.appendChild(trolls.controller.trolls_[3].setPosition(78, -96).changeDirection());
-    bg.appendChild(trolls.controller.trolls_[4].setPosition(122, -10).changeDirection());
+    bg.appendChild(
+	trolls.controller.trolls_[3].setPosition(78, -96).changeDirection());
+    bg.appendChild(
+	trolls.controller.trolls_[4].setPosition(122, -10).changeDirection());
 
     // Add evil message.
     var label = lib.label(

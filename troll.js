@@ -71,6 +71,12 @@ trolls.Troll.prototype.setDirection = function(x, y) {
     this.direction_ = new goog.math.Coordinate(x, y);
 };
 
+trolls.Troll.prototype.startWalking = function() {
+    this.walk_ = trolls.resources.getTrollWalk();
+    this.runAction(this.walk_);
+    return this;
+};
+
 trolls.Troll.prototype.getLocation = function() {
     return this.loc_;
 };
@@ -141,13 +147,13 @@ trolls.Troll.prototype.step = function(dt) {
     if (this.goal_ == null) {
 	this.goal_ = trolls.controller.findTarget(this);
 	if (this.goal_ == null) {
-	    this.walk_.stop();
-	    this.setFill(trolls.resources.getTroll());
-	    return;
+	    // this.walk_.stop();
+	    // this.setFill(trolls.resources.getTroll());
+	    // return;
 	}
     }
 
-    this.move(dt);
+//    this.move(dt);
 };
 
 // Names
@@ -160,5 +166,6 @@ trolls.Troll.suffix_ = [
     "the Destroyer", "the Stinky", "Rocknose", "the Hairy", "Galumph",
     "Hammerfist", "the Tiny", "the Angry", "the Incontinent", "Bloodfist",
     "Headbutt", "the Butthead", "of the Swamp", "Poisonpants", "Mudface",
-    "the Clumsy", "Thump-Thump"
+    "the Clumsy", "Thump-Thump", "Barkskin", "the Boogerful", "Ironsides",
+    "Irongut", "Firegut", "the Maneater"
 ];
