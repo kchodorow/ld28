@@ -37,19 +37,19 @@ trolls.Controller.prototype.keydown = function(controller, e) {
     switch (e.event.keyCode) {
     case goog.events.KeyCodes.LEFT:
     case goog.events.KeyCodes.A:
-	controller.controlled_.setDirection(-1, 0);
+	controller.controlled_.setDirection(new goog.math.Vec2(-1, 0));
 	break;
     case goog.events.KeyCodes.RIGHT:
     case goog.events.KeyCodes.D:
-	controller.controlled_.setDirection(1, 0);
+	controller.controlled_.setDirection(new goog.math.Vec2(1, 0));
 	break;
     case goog.events.KeyCodes.UP:
     case goog.events.KeyCodes.W:
-	controller.controlled_.setDirection(0, -1);
+	controller.controlled_.setDirection(new goog.math.Vec2(0, -1));
 	break;
     case goog.events.KeyCodes.DOWN:
     case goog.events.KeyCodes.S:
-	controller.controlled_.setDirection(0, 1);
+	controller.controlled_.setDirection(new goog.math.Vec2(0, 1));
 	break;
     case goog.events.KeyCodes.SPACE:
 	var troll = controller.controlled_;
@@ -84,7 +84,7 @@ trolls.Controller.prototype.keydown = function(controller, e) {
 };
 
 trolls.Controller.prototype.keyup = function(controller, e) {
-    controller.controlled_.setDirection(0, 0);
+    controller.controlled_.setDirection(new goog.math.Vec2(0, 0));
 };
 
 trolls.Controller.prototype.findTarget = function(actor) {

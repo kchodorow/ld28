@@ -20,7 +20,27 @@ trolls.Mixins.moveTowards = function(dt) {
     }
 };
 
+trolls.Mixins.randomWalk = function(dt) {
+    var PROBABILITY_OF_CHANGING_DIR = 15;
+    if (lib.random(PROBABILITY_OF_CHANGING_DIR) == 0) {
+	this.setDirection(trolls.Mixins.getRandomDirection());
+    }
+    var distance = dt*this.speed_;
+    var pos = this.getPosition().clone();
+    var new_pos = pos.translate(
+	this.direction_.clone().scale(Math.sqrt(distance)));
+    if (trolls.map.contains(new_pos)) {
+	this.setPosition(new_pos);
+    }
+};
+
+// @return Vec2 A cardinal direction (NSEW).
 trolls.Mixins.getRandomDirection = function() {
-    // TODO: not right, both can be 1
-    return new goog.math.Coordinate(lib.random(0, 3)-1, lib.random(0, 3)-1);
+    var dir_x = lib.random(0, 3)-1;
+    var dir_y = lib.random(0, 3)-1;
+    if (lib.random(2) == 0) {
+	return new goog.math.Vec2(dir_x, dir_x == 0 ? dir_y : 0);
+    } else {
+	return new goog.math.Vec2(dir_y == 0 ? dir_x : 0, dir_y);
+    }
 };

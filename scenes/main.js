@@ -32,7 +32,7 @@ trolls.scenes.Main.troll_counter_ = 0;
 
 trolls.scenes.Main.addTroll = function(village, pos) {
     var troll = trolls.getTroll(trolls.scenes.Main.troll_counter_)
-	.setPosition(pos).startWalking();
+	.setPosition(pos);
     lib.Debug.attach(troll);
     village.appendChild(troll);
 
