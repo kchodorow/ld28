@@ -3,7 +3,8 @@ goog.provide('trolls.Troll');
 goog.require('lib.Debug');
 goog.require('lib.Direction');
 goog.require('lib.ProgressBar');
-goog.require('trolls.Mixins');
+goog.require('lib.Tag');
+goog.require('trolls.DumbMove');
 
 trolls.Troll = function() {
     lime.Sprite.call(this);
@@ -22,18 +23,22 @@ trolls.Troll = function() {
     this.defense_ = 0;
     this.attack_ = 0;
     this.speed_ = trolls.Troll.SPEED;
+    this.eyesight_ = 3*LEN;
+    this.sight_ = new lime.Sprite().setSize(this.eyesight_, this.eyesight_)
+	.setFill(trolls.resources.YELLOW).setOpacity(.2);
+//    this.appendChild(this.sight_);
 
     // Movement
     this.direction_ = new goog.math.Coordinate(0, 0);
-    this.move = goog.bind(trolls.Mixins.randomWalk, this);
+    goog.object.extend(this, new lib.Direction(this));
     this.step = this.uncontrolledStep;
     this.is_moving_ = false;
     this.walk_ = trolls.resources.getTrollWalk();
+    goog.object.extend(this, trolls.DumbMove);
 
     this.setFill(trolls.resources.getTroll());
-    this.addHealthBar();
-    lib.Direction.attach(this);
     lib.Debug.attach(this);
+    goog.object.extend(this, new lib.Tag(['troll']));
 };
 
 goog.inherits(trolls.Troll, lime.Sprite);
@@ -49,6 +54,9 @@ trolls.Troll.prototype.getName = function() {
 };
 
 trolls.Troll.prototype.addHealthBar = function() {
+    if ('health_bar_' in this) {
+	return;
+    }
     var progress_bar = new lib.ProgressBar();
     progress_bar.setBackgroundColor(trolls.resources.DARK_GREEN);
     progress_bar.setForegroundColor(trolls.resources.GREEN);
@@ -86,6 +94,23 @@ trolls.Troll.prototype.stop = function() {
     this.walk_.stop();
     this.is_moving_ = false;
     this.setFill(trolls.resources.getTroll());
+};
+
+trolls.Troll.prototype.smashSomething = function() {
+    var nearest = trolls.map.findNearestInBox(
+	this.sight_.getFrame(), ["powerup", "hut", "villager"]);
+
+    if (!nearest) {
+	// TODO: smash, no effect.
+    } else if (nearest.isA('powerup')) {
+	if (nearest.inquire) {
+	    controller.hud_.inquireAbout(nearest);
+	} else {
+	    nearest.attachTo(this);
+	}
+    } else {
+	this.attack();
+    }
 };
 
 trolls.Troll.prototype.attack = function() {
@@ -139,6 +164,9 @@ trolls.Troll.prototype.distanceToGoal = function() {
 	this.getPosition(), this.goal_.getPosition());
 };
 
+trolls.Troll.prototype.canSeeTarget = function() {
+};
+
 trolls.Troll.prototype.controlledStep = function(dt) {
     var distance = trolls.Troll.SPEED * dt;
     this.setPosition(
@@ -152,13 +180,20 @@ trolls.Troll.prototype.uncontrolledStep = function(dt) {
 	return;
     }
 
-    this.move(dt);
+    // See if there are any targets nearby.
+    if (this.canSeeTarget()) {
+	// If so, head towards them for stompage.
+	this.moveTowardsTarget(dt);
+    } else {
+	// Otherwise, wander around.
+	this.randomWalk(dt);
+    }
 };
 
 // Names
 trolls.Troll.given_name_ = [
     "Grog", "Ogg", "Brog", "Ploog", "Zorg", "Zorn", "Frampton", "Mush-Nose",
-    "Froog", "Blatt", "Poob", "Rawr", "Drob", "Woob"
+    "Froog", "Blatt", "Poob", "Rawr", "Drob", "Woob", "Splum"
 ];
 
 trolls.Troll.suffix_ = [
@@ -166,5 +201,5 @@ trolls.Troll.suffix_ = [
     "Hammerfist", "the Tiny", "the Angry", "the Incontinent", "Bloodfist",
     "Headbutt", "the Butthead", "of the Swamp", "Poisonpants", "Mudface",
     "the Clumsy", "Thump-Thump", "Barkskin", "the Boogerful", "Ironsides",
-    "Irongut", "Firegut", "the Maneater"
+    "Irongut", "Firegut", "the Maneater", "Snotface", "Boogerface"
 ];

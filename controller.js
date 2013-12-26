@@ -57,20 +57,7 @@ trolls.Controller.prototype.keydown = function(controller, e) {
 	break;
     case goog.events.KeyCodes.SPACE:
     case goog.events.KeyCodes.ENTER:
-	var troll = controller.controlled_;
-	var targets = goog.array.concat(
-	    controller.village_.getHuts(), controller.village_.getPowerUps(),
-	    controller.village_.getVillagers());
-	troll.goal_ = controller.findClosestTarget_(troll, targets);
-	if (troll.goal_.id == 'Power') {
-	    if (troll.goal_.inquire) {
-		controller.hud_.inquireAbout(troll.goal_);
-	    } else {
-		troll.goal_.attachTo(troll);
-	    }
-	} else {
-	    troll.attack();
-	}
+	controller.controlled_.smashSomething();
 	break;
     case goog.events.KeyCodes.ZERO:
     case goog.events.KeyCodes.ONE:

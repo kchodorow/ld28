@@ -12,7 +12,7 @@ trolls.Villager = function(box) {
 	.setPosition(pos_x*LEN, pos_y*LEN);
     this.goal_ = null;
     this.speed_ = trolls.Villager.SPEED;
-    this.move = goog.bind(trolls.Mixins.moveTowards, this);
+    this.move = goog.bind(trolls.DumbMove.moveTowards, this);
 
     this.walk_ = trolls.resources.getVillagerWalk();
     this.runAction(this.walk_);

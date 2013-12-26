@@ -1,9 +1,9 @@
 goog.provide('trolls.data.Village');
 
 goog.require('lib');
-goog.require('lib.collision.GeoHash');
 goog.require('lib.Cluster');
-goog.require('trolls.Mixins');
+goog.require('lib.Tag');
+goog.require('lib.collision.GeoHash');
 goog.require('trolls.Villager');
 
 // Create a random village.
@@ -80,6 +80,7 @@ trolls.data.Hut = function(pos) {
     this.health_ = 20;
     this.setAnchorPoint(.5, 1).setPosition(pos)
 	.setFill(trolls.resources.getHut());
+    goog.object.extend(this, new lib.Tag(['hut']));
 };
 
 goog.inherits(trolls.data.Hut, lime.Sprite);
