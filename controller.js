@@ -80,11 +80,22 @@ trolls.Controller.prototype.keydown = function(controller, e) {
 		e.event.keyCode - goog.events.KeyCodes.ZERO]();
 	power.attachTo(controller.controlled_);
 	break;
+    case goog.events.KeyCodes.META:
+	controller.meta_ = true;
+	break;
+    case goog.events.KeyCodes.R:
+    case goog.events.KeyCodes.R+32:
+	if (controller.meta_) {
+	    location.reload();
+	}
+	break;
     }
+    return true;
 };
 
 trolls.Controller.prototype.keyup = function(controller, e) {
     controller.controlled_.setDirection(new goog.math.Vec2(0, 0));
+    controller.meta_ = false;
 };
 
 trolls.Controller.prototype.findTarget = function(actor) {
