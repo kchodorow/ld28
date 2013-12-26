@@ -75,7 +75,7 @@ trolls.MoraleMeter = function() {
 goog.inherits(trolls.MoraleMeter, lime.RoundedRect);
 
 trolls.MoraleMeter.WIDTH = 200;
-trolls.MoraleMeter.HEIGHT = 20;
+trolls.MoraleMeter.HEIGHT = 14;
 
 trolls.MoraleMeter.prototype.updateProgress = function(amount) {
     this.current_ += amount;
