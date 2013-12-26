@@ -37,21 +37,26 @@ trolls.Controller.prototype.keydown = function(controller, e) {
     switch (e.event.keyCode) {
     case goog.events.KeyCodes.LEFT:
     case goog.events.KeyCodes.A:
+    case goog.events.KeyCodes.A+32:
 	controller.controlled_.setDirection(new goog.math.Vec2(-1, 0));
 	break;
     case goog.events.KeyCodes.RIGHT:
     case goog.events.KeyCodes.D:
+    case goog.events.KeyCodes.D+32:
 	controller.controlled_.setDirection(new goog.math.Vec2(1, 0));
 	break;
     case goog.events.KeyCodes.UP:
     case goog.events.KeyCodes.W:
+    case goog.events.KeyCodes.W+32:
 	controller.controlled_.setDirection(new goog.math.Vec2(0, -1));
 	break;
     case goog.events.KeyCodes.DOWN:
     case goog.events.KeyCodes.S:
+    case goog.events.KeyCodes.S+32:
 	controller.controlled_.setDirection(new goog.math.Vec2(0, 1));
 	break;
     case goog.events.KeyCodes.SPACE:
+    case goog.events.KeyCodes.ENTER:
 	var troll = controller.controlled_;
 	var targets = goog.array.concat(
 	    controller.village_.getHuts(), controller.village_.getPowerUps(),

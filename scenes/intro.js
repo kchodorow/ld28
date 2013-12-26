@@ -2,6 +2,7 @@ goog.provide('trolls.scenes.Intro');
 
 goog.require('lib.style');
 goog.require('lib.Debug');
+goog.require('lib.Selectable');
 goog.require('lime.Button');
 goog.require('lime.Scene');
 
@@ -15,17 +16,21 @@ trolls.scenes.Intro = function() {
 	.setPosition(WIDTH/2, HEIGHT/2);
     lib.style.setBackgroundFrame(bg, trolls.resources.getGrass());
 
+    // Add scaling node.
+    var node = new lime.Node().setScale(2, 2);
+
     // Add evil god.
-    bg.appendChild(this.getIdol().setPosition(0, -40));
+    node.appendChild(this.getIdol().setPosition(0, -40));
 
     // Add trolls.
-    bg.appendChild(trolls.controller.trolls_[0].setPosition(-122, -10));
-    bg.appendChild(trolls.controller.trolls_[1].setPosition(-78, -96));
-    bg.appendChild(trolls.controller.trolls_[2].setPosition(0, -124));
-    bg.appendChild(
+    node.appendChild(trolls.controller.trolls_[0].setPosition(-122, -10));
+    node.appendChild(trolls.controller.trolls_[1].setPosition(-78, -96));
+    node.appendChild(trolls.controller.trolls_[2].setPosition(0, -124));
+    node.appendChild(
 	trolls.controller.trolls_[3].setPosition(78, -96).changeDirection());
-    bg.appendChild(
+    node.appendChild(
 	trolls.controller.trolls_[4].setPosition(122, -10).changeDirection());
+    bg.appendChild(node);
 
     // Add evil message.
     var label = lib.label(
@@ -38,21 +43,9 @@ trolls.scenes.Intro = function() {
     goog.events.listen(target, lime.animation.Event.STOP, this.talk);
     bg.appendChild(label);
 
-    // Add button.
-    var button_label = lib.label("Begin sacred rampage \u2192");
-    var button_sprite = new lime.RoundedRect()
-	.setSize(button_label.getFrame().size().scale(1.05, 1.2))
-	.setFill(trolls.resources.YELLOW)
-	.setStroke(3, trolls.resources.DARK_GREEN)
-	.setPosition(212, 219);
-    lib.style.setStyle(button_sprite, '{cursor:pointer;}');
-    lib.style.setStyle(button_label, '{cursor:pointer;}');
-    button_sprite.appendChild(button_label);
-    lib.Debug.attach(button_sprite);
-    var button = new lime.Button(button_sprite);
-    bg.appendChild(button);
-    goog.events.listen(
-	button, [lime.Button.Event.CLICK, 'keydown'], this.endScene);
+    // Add buttons.
+    var continue_btn = this.addContinue();
+    bg.appendChild(continue_btn);
 
     this.appendChild(bg);
 };
@@ -81,6 +74,28 @@ trolls.scenes.Intro.prototype.talk = function(e) {
 		new lime.animation.FadeTo(1),
 		new lime.animation.FadeTo(.6))));
 };
+
+trolls.scenes.Intro.prototype.addContinue = function() {
+    var button_label = lib.label("Begin sacred rampage \u2192");
+    var button_size = button_label.getFrame().size().scale(1.05, 1.2);
+    var button_sprite = new lime.RoundedRect()
+	.setSize(button_size)
+	.setFill(trolls.resources.YELLOW)
+	.setStroke(3, trolls.resources.DARK_GREEN)
+	.setPosition(212, 219);
+    lib.style.setStyle(button_sprite, '{cursor:pointer;}');
+    lib.style.setStyle(button_label, '{cursor:pointer;}');
+    button_sprite.appendChild(button_label);
+    lib.Debug.attach(button_sprite);
+    goog.object.extend(button_sprite, new lib.Selectable());
+    button_sprite.selectable_.selectCallback.color = trolls.resources.YELLOW;
+    button_sprite.select();
+
+    var button = new lime.Button(button_sprite);
+    goog.events.listen(
+	button, [lime.Button.Event.CLICK, 'keydown'], this.endScene);
+    return button;
+}
 
 trolls.scenes.Intro.prototype.endScene = function(e) {
     e.target.getDirector().replaceScene(new trolls.scenes.Picker());
