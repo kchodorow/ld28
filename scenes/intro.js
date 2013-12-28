@@ -17,7 +17,7 @@ trolls.scenes.Intro = function() {
     lib.style.setBackgroundFrame(bg, trolls.resources.getGrass());
 
     // Add scaling node.
-    var node = new lime.Node().setScale(2, 2);
+    var node = new lime.Node();
 
     // Add evil god.
     node.appendChild(this.getIdol().setPosition(0, -40));

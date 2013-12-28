@@ -24,7 +24,7 @@ goog.require('trolls.scenes.Intro');
 
 var WIDTH = 1024;
 var HEIGHT = 768;
-var LEN = 44;
+var LEN = 88;
 
 // entrypoint
 trolls.start = function(){

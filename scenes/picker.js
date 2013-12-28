@@ -33,7 +33,7 @@ trolls.scenes.Picker = function() {
 	}
 
 	// Troll sprite
-	var doubler = new lime.Sprite().setScale(2, 2);
+	var doubler = new lime.Sprite();
 	var troll = troll_list[i].setPosition(0, 0).faceRight();
 	troll.addHealthBar();
 	doubler.appendChild(troll);
