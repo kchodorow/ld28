@@ -83,7 +83,12 @@ trolls.Troll.prototype.setDirection = function(vec) {
     } else if (this.direction_.x < 0) {
 	this.faceLeft();
 	this.walk();
-    } else if (this.direction_.x == 0 && this.direction_.y == 0) {
+    } else if (this.direction_.y != 0) {
+	// If the troll is walking up or down, continue walking in the direction
+	// that they were previously facing.
+	this.walk();
+    } else {
+	// x and y are 0.
 	this.stop();
     }
 };
@@ -208,7 +213,8 @@ trolls.Troll.prototype.uncontrolledStep = function(dt) {
 // Names
 trolls.Troll.given_name_ = [
     "Grog", "Ogg", "Brog", "Ploog", "Zorg", "Zorn", "Frampton", "Mush-Nose",
-    "Froog", "Blatt", "Poob", "Rawr", "Drob", "Woob", "Splum"
+    "Froog", "Blatt", "Poob", "Rawr", "Drob", "Woob", "Splum", "Bj\u00D8rn",
+    "Per"
 ];
 
 trolls.Troll.suffix_ = [
