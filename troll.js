@@ -97,28 +97,39 @@ trolls.Troll.prototype.stop = function() {
     this.setFill(trolls.resources.getTroll());
 };
 
-trolls.Troll.prototype.smashSomething = function() {
-    var translated_sight = this.sight_.getFrame().clone()
-	.translate(this.getPosition());
-    var nearest = trolls.map.findNearestInBox(
-	this, translated_sight, ["powerup", "hut", "villager"]);
+trolls.Troll.prototype.attack = function() {
+    var attack = trolls.resources.getTrollAttack();
+    this.runAction(attack);
 
-    this.visualSmash_();
-
-    // if (!nearest) {
-    // 	// TODO: smash, no effect.
-    // } else if (nearest.isA('powerup')) {
-    // 	if (nearest.inquire) {
-    // 	    controller.hud_.inquireAbout(nearest);
-    // 	} else {
-    // 	    nearest.attachTo(this);
-    // 	}
-    // } else {
-    // 	this.attack();
-    // }
+    goog.events.listen(
+	attack, lime.animation.Event.STOP, 
+	goog.bind(this.smashed_, this));
 };
 
-trolls.Troll.prototype.expandSmashCircle_ = function() {
+trolls.Troll.prototype.smashed_ = function() {
+    this.visualSmash_();
+
+    var sight = this.sight_.getFrame().clone()
+	.translate(this.getPosition());
+    var nearest = trolls.map.findNearestInBox(
+	this, sight, ["powerup", "hut", "villager"]);
+
+    if (!nearest) {
+	return;
+    }
+
+    if (nearest.isA('powerup')) {
+     	if (nearest.inquire) {
+     	    controller.hud_.inquireAbout(nearest);
+	} else {
+     	    nearest.attachTo(this);
+	}
+    } else {
+	nearest.smoosh(trolls.Troll.BASE_ATTACK+this.attack_);
+    }
+};
+
+trolls.Troll.prototype.visualSmash_ = function() {
     var smash = new lime.Circle().setSize(30, 5).setOpacity(.5)
 	.setPosition(0, LEN/2).setFill(trolls.resources.RED);
     smash.runAction(
@@ -127,35 +138,6 @@ trolls.Troll.prototype.expandSmashCircle_ = function() {
      		.setEasing(lime.animation.Easing.LINEAR),
      	    new lime.animation.FadeTo(0)));
     this.appendChild(smash);
-};
-
-trolls.Troll.prototype.visualSmash_ = function() {
-    var attack = trolls.resources.getTrollAttack();
-    this.runAction(attack);
-
-    goog.events.listen(
-	attack, lime.animation.Event.STOP, 
-	goog.bind(this.expandSmashCircle_, this));
-};
-
-trolls.Troll.prototype.attack = function() {
-    if (this.distanceToGoal() > LEN) {
-	return;
-    }
-
-    this.attacking_ = true;
-    var attack_anim = trolls.resources.getTrollAttack();
-    this.runAction(attack_anim);
-    var troll = this;
-    goog.events.listen(
-	attack_anim, lime.animation.Event.STOP, function(e) {
-	    if (troll.goal_ == null) {
-		return;
-	    }
-	    troll.goal_.smoosh(trolls.Troll.BASE_ATTACK+troll.attack_);
-	    troll.goal_ = null;
-	    troll.attacking_ = false;
-	});
 };
 
 trolls.Troll.prototype.choose = function() {

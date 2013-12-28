@@ -15,10 +15,13 @@ trolls.data.Power.BasePower = function() {
     var pulse = new lime.animation.Sequence(
 	new lime.animation.ScaleTo(1.2), new lime.animation.ScaleTo(1.0));
     this.runAction(new lime.animation.Loop(pulse));
-    this.id = "Power";
     this.inquire = false;
+    goog.object.extend(this, new lib.Tag(trolls.data.Power.TAGS));
 };
+
 goog.inherits(trolls.data.Power.BasePower, lime.Sprite);
+
+trolls.data.Power.TAGS = ['powerup'];
 
 // Remove the powerup from the board.
 trolls.data.Power.BasePower.prototype.attachTo = function() {

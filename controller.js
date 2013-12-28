@@ -57,7 +57,7 @@ trolls.Controller.prototype.keydown = function(controller, e) {
 	break;
     case goog.events.KeyCodes.SPACE:
     case goog.events.KeyCodes.ENTER:
-	controller.controlled_.smashSomething();
+	controller.controlled_.attack();
 	break;
     case goog.events.KeyCodes.ZERO:
     case goog.events.KeyCodes.ONE:
