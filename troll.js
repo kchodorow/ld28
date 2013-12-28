@@ -16,7 +16,7 @@ trolls.Troll = function() {
 	trolls.Troll.suffix_[last_idx]
     goog.array.removeAt(trolls.Troll.given_name_, first_idx);
     goog.array.removeAt(trolls.Troll.suffix_, last_idx);
-    this.health_ = 100;
+    this.health_ = this.max_health_ = 100;
     this.goal_ = null;
 
     // Bonuses
@@ -64,6 +64,15 @@ trolls.Troll.prototype.addHealthBar = function() {
     progress_bar.setPosition(0, -LEN);
     this.appendChild(progress_bar);
     this.health_bar_ = progress_bar;
+};
+
+trolls.Troll.prototype.changeHealth = function(amount) {
+    this.health_ += amount;
+    if (this.health_ > this.max_health_) {
+	this.health_ = this.max_health_;
+    } else if (this.health_ < 0) {
+	this.health_ = 0;
+    }
 };
 
 trolls.Troll.prototype.setDirection = function(vec) {

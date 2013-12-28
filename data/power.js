@@ -30,6 +30,24 @@ trolls.data.Power.BasePower.prototype.attachTo = function() {
     }
 };
 
+// Health
+
+trolls.data.Power.Health = function() {
+    trolls.data.Power.BasePower.call(this);
+
+    var MIN_HEALTH = 1;
+    var MAX_HEALTH = 10;
+    this.bonus = lib.random(MIN_HEALTH, MAX_HEALTH);
+    this.name = "+"+this.bonus+" health";
+};
+goog.inherits(trolls.data.Power.Health, trolls.data.Power.BasePower);
+
+trolls.data.Power.Health.prototype.attachTo = function(troll) {
+    trolls.data.Power.BasePower.call(this);
+    troll.changeHealth(this.bonus);
+    troll.appendChild(lib.pointLabel(this.name));
+}
+
 // Defense
 
 trolls.data.Power.Defense = function() {
@@ -181,6 +199,7 @@ trolls.data.Power.Fireball.prototype.attack = function() {
 }
 
 trolls.data.Power.types_ = [
+    trolls.data.Power.Health,
     trolls.data.Power.Defense,
     trolls.data.Power.Attack,
     trolls.data.Power.Speed,

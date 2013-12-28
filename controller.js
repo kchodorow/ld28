@@ -67,6 +67,7 @@ trolls.Controller.prototype.keydown = function(controller, e) {
     case goog.events.KeyCodes.FIVE:
     case goog.events.KeyCodes.SIX:
     case goog.events.KeyCodes.SEVEN:
+    case goog.events.KeyCodes.EIGHT:
 	var power = 
 	    new trolls.data.Power.types_[
 		e.event.keyCode - goog.events.KeyCodes.ZERO]();
