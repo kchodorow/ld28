@@ -98,5 +98,15 @@ trolls.scenes.Intro.prototype.addContinue = function() {
 }
 
 trolls.scenes.Intro.prototype.endScene = function(e) {
-    e.target.getDirector().replaceScene(new trolls.scenes.Picker());
+    if (e.type == lime.Button.Event.CLICK) {
+	e.target.getDirector().replaceScene(new trolls.scenes.Picker());
+	return;
+    }
+    switch (e.event.keyCode) {
+    case goog.events.KeyCodes.SPACE:
+    case goog.events.KeyCodes.ENTER:
+	e.target.getDirector().replaceScene(new trolls.scenes.Picker());
+	break;
+    }
+    return true;
 };
