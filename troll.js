@@ -4,6 +4,7 @@ goog.require('lib.Debug');
 goog.require('lib.Direction');
 goog.require('lib.ProgressBar');
 goog.require('lib.Tag');
+goog.require('lime.animation.KeyframeAnimation');
 goog.require('trolls.DumbMove');
 
 trolls.Troll = function() {
@@ -33,7 +34,6 @@ trolls.Troll = function() {
     goog.object.extend(this, new lib.Direction(this));
     this.step = this.uncontrolledStep;
     this.is_moving_ = false;
-    this.walk_ = trolls.resources.getTrollWalk();
     goog.object.extend(this, trolls.DumbMove);
 
     this.setFill(trolls.resources.getTroll());
@@ -83,6 +83,7 @@ trolls.Troll.prototype.walk = function() {
     if (this.is_moving_) {
 	return;
     }
+    this.walk_ = trolls.resources.getTrollWalk();
     this.runAction(this.walk_);
     this.is_moving_ = true;
 };
@@ -97,20 +98,44 @@ trolls.Troll.prototype.stop = function() {
 };
 
 trolls.Troll.prototype.smashSomething = function() {
+    var translated_sight = this.sight_.getFrame().clone()
+	.translate(this.getPosition());
     var nearest = trolls.map.findNearestInBox(
-	this.sight_.getFrame(), ["powerup", "hut", "villager"]);
+	this, translated_sight, ["powerup", "hut", "villager"]);
 
-    if (!nearest) {
-	// TODO: smash, no effect.
-    } else if (nearest.isA('powerup')) {
-	if (nearest.inquire) {
-	    controller.hud_.inquireAbout(nearest);
-	} else {
-	    nearest.attachTo(this);
-	}
-    } else {
-	this.attack();
-    }
+    this.visualSmash_();
+
+    // if (!nearest) {
+    // 	// TODO: smash, no effect.
+    // } else if (nearest.isA('powerup')) {
+    // 	if (nearest.inquire) {
+    // 	    controller.hud_.inquireAbout(nearest);
+    // 	} else {
+    // 	    nearest.attachTo(this);
+    // 	}
+    // } else {
+    // 	this.attack();
+    // }
+};
+
+trolls.Troll.prototype.expandSmashCircle_ = function() {
+    var smash = new lime.Circle().setSize(30, 5).setOpacity(.5)
+	.setPosition(0, LEN/2).setFill(trolls.resources.RED);
+    smash.runAction(
+    	new lime.animation.Spawn(
+     	    new lime.animation.ScaleTo(5, 4)
+     		.setEasing(lime.animation.Easing.LINEAR),
+     	    new lime.animation.FadeTo(0)));
+    this.appendChild(smash);
+};
+
+trolls.Troll.prototype.visualSmash_ = function() {
+    var attack = trolls.resources.getTrollAttack();
+    this.runAction(attack);
+
+    goog.events.listen(
+	attack, lime.animation.Event.STOP, 
+	goog.bind(this.expandSmashCircle_, this));
 };
 
 trolls.Troll.prototype.attack = function() {
@@ -119,7 +144,6 @@ trolls.Troll.prototype.attack = function() {
     }
 
     this.attacking_ = true;
-    this.walk_.stop();
     var attack_anim = trolls.resources.getTrollAttack();
     this.runAction(attack_anim);
     var troll = this;

@@ -91,9 +91,13 @@ trolls.DumbMove.getRandomDirection = function() {
 
 trolls.DumbMove.getControlleeDirection = function() {
     var goal = trolls.controller.controlled_;
+    var distance = goog.math.Coordinate.distance(
+	goal.getPosition(), this.getPosition());
     var dir = goog.math.Vec2.difference(goal.getPosition(), this.getPosition());
     if (dir.x == 0 && dir.y == 0) {
 	return this.getRandomDirection();
+    } else if (distance <= 2*LEN) {
+	return dir.normalize().scale(-1);
     }
 
     return dir.normalize();

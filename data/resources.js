@@ -13,25 +13,13 @@ trolls.data.Resources = function() {
     this.spritesheet_ = new lime.SpriteSheet(
 	'assets/trolls.png', lime.ASSETS.trolls.json, lime.parser.JSON);
 
-    this.troll_walk_ = new lime.animation.KeyframeAnimation()
-        .setDelay(1.5).setLooping(true);
-    this.troll_walk_.addFrame(this.spritesheet_.getFrame('troll_walk3.png'));
-    this.troll_walk_.addFrame(this.spritesheet_.getFrame('troll_walk4.png'));
-    this.troll_walk_.addFrame(this.spritesheet_.getFrame('troll_walk2.png'));
-    this.troll_walk_.addFrame(this.spritesheet_.getFrame('troll_walk1.png'));
-
-    this.troll_attack_ = new lime.animation.KeyframeAnimation()
-        .setDelay(5).setLooping(false);
-    this.troll_attack_.addFrame(this.spritesheet_.getFrame('troll_smash1.png'));
-    this.troll_attack_.addFrame(this.spritesheet_.getFrame('troll_smash2.png'));
-
     this.villager_walk_ = new lime.animation.KeyframeAnimation()
-        .setDelay(5).setLooping(true);
+        .setDelay(1/4).setLooping(true);
     this.villager_walk_.addFrame(this.spritesheet_.getFrame('villager_walk.png'));
     this.villager_walk_.addFrame(this.spritesheet_.getFrame('villager.png'));
 
     this.villager_attack_ = new lime.animation.KeyframeAnimation()
-        .setDelay(5).setLooping(false);
+        .setDelay(1/4).setLooping(false);
     this.villager_attack_.addFrame(this.spritesheet_.getFrame('villager_lunge2.png'));
     this.villager_attack_.addFrame(this.spritesheet_.getFrame('villager_lunge1.png'));
     this.villager_attack_.addFrame(this.spritesheet_.getFrame('villager.png'));
@@ -63,11 +51,22 @@ trolls.data.Resources.prototype.getTroll = function() {
 };
 
 trolls.data.Resources.prototype.getTrollAttack = function() {
-    return this.troll_attack_;
+    var troll_attack = new lime.animation.KeyframeAnimation()
+        .setDelay(1/4).setLooping(false);
+    troll_attack.addFrame(this.spritesheet_.getFrame('troll_smash1.png'));
+    troll_attack.addFrame(this.spritesheet_.getFrame('troll_smash2.png'));
+    troll_attack.addFrame(this.spritesheet_.getFrame('troll_stand.png'));
+    return troll_attack;
 };
 
 trolls.data.Resources.prototype.getTrollWalk = function() {
-    return this.troll_walk_;
+    var troll_walk = new lime.animation.KeyframeAnimation()
+        .setDelay(1/8).setLooping(true);
+    troll_walk.addFrame(this.spritesheet_.getFrame('troll_walk3.png'));
+    troll_walk.addFrame(this.spritesheet_.getFrame('troll_walk4.png'));
+    troll_walk.addFrame(this.spritesheet_.getFrame('troll_walk2.png'));
+    troll_walk.addFrame(this.spritesheet_.getFrame('troll_walk1.png'));
+    return troll_walk;
 };
 
 trolls.data.Resources.prototype.getMarker = function() {
