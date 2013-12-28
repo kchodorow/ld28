@@ -1,5 +1,20 @@
 goog.provide('trolls.DumbMove');
 
+trolls.DumbMove.step = function(dt) {
+    if (this.dead_) {
+	return;
+    }
+
+    // See if there are any targets nearby.
+    if (this.canSeeTarget()) {
+	// If so, head towards them for stompage.
+	this.moveTowardsTarget(dt);
+    } else {
+	// Otherwise, wander around.
+	this.randomWalk(dt);
+    }
+};
+
 trolls.DumbMove.canSeeTarget = function() {
     var dir = this.direction_.clone();
     var top = 0, left = 0, bottom = 0, right = 0;

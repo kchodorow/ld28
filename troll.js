@@ -32,9 +32,8 @@ trolls.Troll = function() {
     // Movement
     this.direction_ = new goog.math.Coordinate(0, 0);
     goog.object.extend(this, new lib.Direction(this));
-    this.step = this.uncontrolledStep;
-    this.is_moving_ = false;
     goog.object.extend(this, trolls.DumbMove);
+    this.is_moving_ = false;
 
     this.setFill(trolls.resources.getTroll());
     lib.Debug.attach(this);
@@ -163,7 +162,7 @@ trolls.Troll.prototype.choose = function() {
 
 trolls.Troll.prototype.unchoose = function() {
     this.removeChild(this.marker_);
-    this.step = this.uncontrolledStep;
+    this.step = trolls.DumbMove.step;
 };
 
 trolls.Troll.prototype.changeHealth = function(amount) {
@@ -184,9 +183,6 @@ trolls.Troll.prototype.distanceToGoal = function() {
 	this.getPosition(), this.goal_.getPosition());
 };
 
-trolls.Troll.prototype.canSeeTarget = function() {
-};
-
 trolls.Troll.prototype.controlledStep = function(dt) {
     var distance = trolls.Troll.SPEED * dt;
     this.setPosition(
@@ -195,25 +191,10 @@ trolls.Troll.prototype.controlledStep = function(dt) {
     return;
 };
 
-trolls.Troll.prototype.uncontrolledStep = function(dt) {
-    if (this.dead_) {
-	return;
-    }
-
-    // See if there are any targets nearby.
-    if (this.canSeeTarget()) {
-	// If so, head towards them for stompage.
-	this.moveTowardsTarget(dt);
-    } else {
-	// Otherwise, wander around.
-	this.randomWalk(dt);
-    }
-};
-
 // Names
 trolls.Troll.given_name_ = [
     "Grog", "Ogg", "Brog", "Ploog", "Zorg", "Zorn", "Frampton", "Mush-Nose",
-    "Froog", "Blatt", "Poob", "Rawr", "Drob", "Woob", "Splum", "Bj\u00D8rn",
+    "Froog", "Blatt", "Poob", "Rawr", "Drob", "Woob", "Splum", "Bj\u00F8rn",
     "Per"
 ];
 
