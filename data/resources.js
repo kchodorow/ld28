@@ -13,11 +13,6 @@ trolls.data.Resources = function() {
     this.spritesheet_ = new lime.SpriteSheet(
 	'assets/trolls.png', lime.ASSETS.trolls.json, lime.parser.JSON);
 
-    this.villager_walk_ = new lime.animation.KeyframeAnimation()
-        .setDelay(1/4).setLooping(true);
-    this.villager_walk_.addFrame(this.spritesheet_.getFrame('villager_walk.png'));
-    this.villager_walk_.addFrame(this.spritesheet_.getFrame('villager.png'));
-
     this.villager_attack_ = new lime.animation.KeyframeAnimation()
         .setDelay(1/4).setLooping(false);
     this.villager_attack_.addFrame(this.spritesheet_.getFrame('villager_lunge2.png'));
@@ -82,7 +77,11 @@ trolls.data.Resources.prototype.getVillagerAttack = function() {
 };
 
 trolls.data.Resources.prototype.getVillagerWalk = function() {
-    return this.villager_walk_;
+    var villager_walk = new lime.animation.KeyframeAnimation()
+        .setDelay(1/8).setLooping(true);
+    villager_walk.addFrame(this.spritesheet_.getFrame('villager_walk.png'));
+    villager_walk.addFrame(this.spritesheet_.getFrame('villager.png'));
+    return villager_walk;
 };
 
 trolls.data.Resources.prototype.getMoraleMeterBg = function() {

@@ -1,24 +1,35 @@
 goog.provide('trolls.Villager');
 
-trolls.Villager = function(box) {
+trolls.Villager = function() {
     lime.Sprite.call(this);
 
-    this.goal_expires_ms_ = new lib.random(3000, 5000);
     this.health_ = 1;
-    var pos_x = lib.random(box.left, box.right);
-    var pos_y = lib.random(box.top, box.bottom);
-    this.loc_ = new goog.math.Coordinate(pos_x, pos_y);
-    this.setFill(trolls.resources.getVillager())
-	.setPosition(pos_x*LEN, pos_y*LEN);
-    this.goal_ = null;
+    this.setFill(trolls.resources.getVillager());
+    goog.object.extend(this, new lib.Direction(this));
+    this.faceRandom();
     this.speed_ = trolls.Villager.SPEED;
-    this.move = goog.bind(trolls.DumbMove.moveTowards, this);
+    goog.object.extend(this, trolls.DumbMove);
 
-    this.walk_ = trolls.resources.getVillagerWalk();
-    this.runAction(this.walk_);
+    goog.object.extend(
+	this, new trolls.Direction()
+	    .setWalk(
+		goog.bind(trolls.resources.getVillagerWalk, trolls.resources))
+	    .setStop(
+		goog.bind(trolls.resources.getVillager, trolls.resources)));
 };
 
 goog.inherits(trolls.Villager, lime.Sprite);
+
+trolls.Villager.create = function(village, pos) {
+    var villager = new trolls.Villager().setPosition(pos);
+    village.appendChild(villager);
+    trolls.controller.addActor(villager);
+    return villager;
+};
+
+trolls.Villager.prototype.getAttackees = function() {
+    return ["troll"];
+};
 
 trolls.Villager.prototype.smoosh = function(damage) {
     this.health_ -= damage;
@@ -33,9 +44,8 @@ trolls.Villager.prototype.smoosh = function(damage) {
     trolls.controller.changeMorale(trolls.resources.MORALE.VILLAGER_SMOOSH);
 };
 
-trolls.Villager.prototype.attack = function() {
-    this.attacking_ = true;
-    if (this.goal_.id != 'Troll') {
+trolls.Villager.prototype.attack = function(target) {
+    if (!target.isA('troll')) {
 	return;
     }
     var villager = this;

@@ -5,6 +5,7 @@ goog.require('lib.Direction');
 goog.require('lib.ProgressBar');
 goog.require('lib.Tag');
 goog.require('lime.animation.KeyframeAnimation');
+goog.require('trolls.Direction');
 goog.require('trolls.DumbMove');
 
 trolls.Troll = function() {
@@ -24,14 +25,16 @@ trolls.Troll = function() {
     this.defense_ = 0;
     this.attack_ = 0;
     this.speed_ = trolls.Troll.SPEED;
-    this.eyesight_ = 3*LEN;
-    this.sight_ = new lime.Sprite().setSize(this.eyesight_, this.eyesight_)
-	.setFill(trolls.resources.YELLOW).setOpacity(.2);
 //    this.appendChild(this.sight_);
 
     // Movement
-    this.direction_ = new goog.math.Coordinate(0, 0);
     goog.object.extend(this, new lib.Direction(this));
+    goog.object.extend(
+	this, new trolls.Direction()
+	    .setWalk(
+		goog.bind(trolls.resources.getTrollWalk, trolls.resources))
+	    .setStop(
+		goog.bind(trolls.resources.getTroll, trolls.resources)));
     goog.object.extend(this, trolls.DumbMove);
     this.is_moving_ = false;
 
@@ -74,61 +77,30 @@ trolls.Troll.prototype.changeHealth = function(amount) {
     }
 };
 
-trolls.Troll.prototype.setDirection = function(vec) {
-    this.direction_ = vec;
-    if (this.direction_.x > 0) {
-	this.faceRight();
-	this.walk();
-    } else if (this.direction_.x < 0) {
-	this.faceLeft();
-	this.walk();
-    } else if (this.direction_.y != 0) {
-	// If the troll is walking up or down, continue walking in the direction
-	// that they were previously facing.
-	this.walk();
-    } else {
-	// x and y are 0.
-	this.stop();
-    }
+trolls.Troll.prototype.getAttackees = function() {
+    return ["powerup", "hut", "villager"];
 };
 
-trolls.Troll.prototype.walk = function() {
-    if (this.is_moving_) {
-	return;
-    }
-    this.walk_ = trolls.resources.getTrollWalk();
-    this.runAction(this.walk_);
-    this.is_moving_ = true;
-};
-
-trolls.Troll.prototype.stop = function() {
-    if (!this.is_moving_) {
-	return;
-    }
-    this.walk_.stop();
-    this.is_moving_ = false;
-    this.setFill(trolls.resources.getTroll());
-};
-
-trolls.Troll.prototype.attack = function() {
+trolls.Troll.prototype.attack = function(target) {
     var attack = trolls.resources.getTrollAttack();
     this.runAction(attack);
 
     goog.events.listen(
 	attack, lime.animation.Event.STOP, 
-	goog.bind(this.smashed_, this));
+	goog.bind(this.smashed_, this, target));
 };
 
-trolls.Troll.prototype.smashed_ = function() {
+trolls.Troll.prototype.smashed_ = function(target) {
     this.visualSmash_();
 
-    var sight = this.sight_.getFrame().clone()
-	.translate(this.getPosition());
-    var nearest = trolls.map.findNearestInBox(
-	this, sight, ["powerup", "hut", "villager"]);
-
-    if (!nearest) {
-	return;
+    if (!target) {
+	var sight = this.sight_.getFrame().clone()
+	    .translate(this.getPosition());
+	nearest = trolls.map.findNearestInBox(
+	    this, sight, ["powerup", "hut", "villager"]);
+	if (!nearest) {
+	    return;
+	}
     }
 
     if (nearest.isA('powerup')) {

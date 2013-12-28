@@ -139,15 +139,15 @@ trolls.Controller.prototype.addHud = function(hud) {
 trolls.Controller.prototype.addVillage = function(village) {
     this.village_ = village;
     for (var i = 0; i < village.villagers_.length; i++) {
-	this.addActor_(village.villagers_[i]);
+	this.addActor(village.villagers_[i]);
     }
 };
 
 trolls.Controller.prototype.removeHut = function(e) {
     var hut = e.target.targets[0];
     var pos = hut.getPosition();
-    this.village_.removeHut(hut);
-    if (lib.random(10) == 0) {
+    hut.getParent().removeChild(hut);
+    if (lib.random.percentChance(10)) {
 	var power = trolls.data.Power.getRandom();
 	this.village_.addPower(power, pos);
     }
@@ -172,7 +172,7 @@ trolls.Controller.prototype.addTroll = function(troll) {
     this.trolls_.push(troll);
 };
 
-trolls.Controller.prototype.addActor_ = function(thing) {
+trolls.Controller.prototype.addActor = function(thing) {
     this.actors_.push(thing);
 };
 

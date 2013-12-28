@@ -22,34 +22,21 @@ trolls.data.Village = function() {
 goog.inherits(trolls.data.Village, lime.Sprite);
 
 trolls.data.Village.prototype.addHuts = function() {
-    this.huts_ = [];
     var hut_cluster = new lib.Cluster()
 	.setCreator(goog.bind(trolls.data.Hut.create, null, this))
 	.setBoundingBox(new goog.math.Box(-250, 400, 250, -200))
 	.setMap(trolls.map).generate();
 };
 
-trolls.data.Village.prototype.removeHut = function(hut) {
-    this.removeChild(hut);
-    goog.array.remove(this.huts_, hut);
-};
-
-trolls.data.Village.prototype.removeVillager = function(hut) {
-    this.removeChild(hut);
-    goog.array.remove(this.villagers_, hut);
-};
-
 trolls.data.Village.prototype.addVillagers = function() {
     this.villagers_ = [];
-    // var MIN_VILLAGERS = 20;
-    // var MAX_VILLAGERS = 50;
-    // var num_villagers = lib.random(MIN_VILLAGERS, MAX_VILLAGERS);
-    // for (var i = 0; i < num_villagers; ++i) {
-    // 	var villager = new trolls.Villager(this.box_);
-    // 	this.villagers_.push(villager);
-    // 	lib.Debug.attach(villager);
-    // 	this.appendChild(villager);
-    // }
+    var MIN_VILLAGERS = 10;
+    var MAX_VILLAGERS = 30;
+    var num_villagers = lib.random(MIN_VILLAGERS, MAX_VILLAGERS);
+    var villager_cluster = new lib.Cluster()
+        .setCreator(goog.bind(trolls.Villager.create, null, this))
+	.setBoundingBox(new goog.math.Box(-250, 400, 250, -200))
+	.setMap(trolls.map).generate();
 };
 
 trolls.data.Village.prototype.getVillagers = function() {
@@ -78,6 +65,7 @@ trolls.data.Hut = function(pos) {
     lime.Sprite.call(this);
 
     this.health_ = 20;
+    this.squishiness_ = 1;
     this.setAnchorPoint(.5, 1).setPosition(pos)
 	.setFill(trolls.resources.getHut());
     goog.object.extend(this, new lib.Tag(['hut']));
@@ -95,9 +83,14 @@ trolls.data.Hut.create = function(village, pos) {
 
 trolls.data.Hut.prototype.smoosh = function(damage) {
     this.health_ -= damage;
-    this.appendChild(lib.pointLabel(-damage));
-    if (this.health_ <= 0) {
-	var action = new lime.animation.ScaleTo(1, 0)
+    this.appendChild(lib.pointLabel(-damage).setPosition(0, -LEN));
+    if (this.health_ > 0) {
+        this.squishiness_ *= .9;
+	this.runAction(
+            new lime.animation.ScaleTo(1, this.squishiness_)
+                .setEasing(lime.animation.Easing.LINEAR));
+    } else {
+	var action = new lime.animation.ScaleTo(1, 0);
 	this.runAction(action);
 	goog.events.listen(
 	    action, lime.animation.Event.STOP,

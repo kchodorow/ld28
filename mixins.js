@@ -1,3 +1,4 @@
+goog.provide('trolls.Direction');
 goog.provide('trolls.DumbMove');
 
 trolls.DumbMove.step = function(dt) {
@@ -46,7 +47,7 @@ trolls.DumbMove.canSeeTarget = function() {
 
     var box = new goog.math.Box(top, right, bottom, left);
     this.sight_.setPosition((right-left)/2, (bottom-top)/2);
-    var results = trolls.map.findInBox(box, ["hut", "villager"]);
+    var results = trolls.map.findInBox(box, this.getAttackees());
     if (results.length > 0) {
 	this.target_ = results[0];
 	return true;
@@ -70,7 +71,7 @@ trolls.DumbMove.moveTowardsTarget = function(dt) {
     }
 
     if (goog.math.Coordinate.distance(start_pos, target_pos) < LEN) {
-	this.attack();
+	this.attack(this.target_);
     }
 };
 
@@ -116,4 +117,59 @@ trolls.DumbMove.getControlleeDirection = function() {
     }
 
     return dir.normalize();
+};
+
+trolls.Direction = function() {
+    this.direction_ = new goog.math.Vec2(0, 0);
+
+    // This should really be in DumbMove or its own class.
+    this.eyesight_ = 3*LEN;
+    this.sight_ = new lime.Sprite().setSize(this.eyesight_, this.eyesight_)
+	.setFill(trolls.resources.YELLOW).setOpacity(.2);
+};
+
+trolls.Direction.prototype.setWalk = function(cb) {
+    this.walk_cb_ = cb;
+    return this;
+};
+
+trolls.Direction.prototype.setStop = function(cb) {
+    this.stop_cb_ = cb;
+    return this;
+};
+
+trolls.Direction.prototype.setDirection = function(vec) {
+    this.direction_ = vec;
+    if (this.direction_.x > 0) {
+	this.faceRight();
+	this.walk();
+    } else if (this.direction_.x < 0) {
+	this.faceLeft();
+	this.walk();
+    } else if (this.direction_.y != 0) {
+	// If the troll is walking up or down, continue walking in the direction
+	// that they were previously facing.
+	this.walk();
+    } else {
+	// x and y are 0.
+	this.stop();
+    }
+};
+
+trolls.Direction.prototype.walk = function() {
+    if (this.is_moving_) {
+	return;
+    }
+    this.walk_ = this.walk_cb_();
+    this.runAction(this.walk_);
+    this.is_moving_ = true;
+};
+
+trolls.Direction.prototype.stop = function() {
+    if (!this.is_moving_) {
+	return;
+    }
+    this.walk_.stop();
+    this.is_moving_ = false;
+    this.setFill(this.stop_cb_());
 };
