@@ -11,13 +11,7 @@ trolls.data.Resources = function() {
     FONT_SIZE = 36;
 
     this.spritesheet_ = new lime.SpriteSheet(
-	'assets/trolls.png', lime.ASSETS.trolls.json, lime.parser.JSON);
-
-    this.villager_attack_ = new lime.animation.KeyframeAnimation()
-        .setDelay(1/4).setLooping(false);
-    this.villager_attack_.addFrame(this.spritesheet_.getFrame('villager_lunge2.png'));
-    this.villager_attack_.addFrame(this.spritesheet_.getFrame('villager_lunge1.png'));
-    this.villager_attack_.addFrame(this.spritesheet_.getFrame('villager.png'));
+        'assets/trolls.png', lime.ASSETS.trolls.json, lime.parser.JSON);
 };
 
 trolls.data.Resources.prototype.MORALE = {
@@ -73,7 +67,12 @@ trolls.data.Resources.prototype.getVillager = function() {
 };
 
 trolls.data.Resources.prototype.getVillagerAttack = function() {
-    return this.villager_attack_;
+    var villager_attack = new lime.animation.KeyframeAnimation()
+        .setDelay(1/8).setLooping(false);
+    villager_attack.addFrame(this.spritesheet_.getFrame('villager_lunge2.png'));
+    villager_attack.addFrame(this.spritesheet_.getFrame('villager_lunge1.png'));
+    villager_attack.addFrame(this.spritesheet_.getFrame('villager.png'));
+    return villager_attack;
 };
 
 trolls.data.Resources.prototype.getVillagerWalk = function() {

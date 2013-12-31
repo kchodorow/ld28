@@ -3,7 +3,11 @@ goog.provide('trolls.Villager');
 trolls.Villager = function() {
     lime.Sprite.call(this);
 
-    goog.object.extend(this, new trolls.Health(1));
+    // Make squishable from above.
+    this.setAnchorPoint(.5, 1);
+
+    goog.object.extend(
+        this, new trolls.Health(1).setChangeCallback(this.smoosh));
      this.setFill(trolls.resources.getVillager());
     goog.object.extend(this, new lib.Direction(this));
     this.faceRandom();
@@ -39,21 +43,18 @@ trolls.Villager.prototype.getAttackees = function() {
 };
 
 trolls.Villager.prototype.smoosh = function(damage) {
-    this.changeHealth(-damage);
     // Always 1-hit death
-    var action = new lime.animation.ScaleTo(1, 0);
+    var action = new lime.animation.ScaleTo(1, 0)
+            .setEasing(lime.animation.Easing.LINEAR);
     this.runAction(action);
-    goog.events.listen(
-        action, lime.animation.Event.STOP,
+    action.listen(
+        lime.animation.Event.STOP,
         goog.bind(trolls.controller.removeThing, trolls.controller));
     trolls.controller.changeMorale(trolls.resources.MORALE.VILLAGER_SMOOSH);
 };
 
 trolls.Villager.prototype.attack = function(target) {
     this.attacking_ = true;
-    if (!target.isA('troll')) {
-        return;
-    }
 
     // For closure access.
     var villager = this;
@@ -62,15 +63,9 @@ trolls.Villager.prototype.attack = function(target) {
     goog.events.listen(
         action, lime.animation.Event.STOP,
         function() {
-    //         if (villager.dead_) {
-    //             return;
-    //         }
-    //         villager.attacking_ = false;
-    //         var diff = goog.math.Coordinate.difference(
-    //             villager.getPosition(), target.getPosition());
-    //         var dummy = new lime.Node().setPosition(
-    //             villager.getPosition().clone().translate(diff.scale(3)));
-    //         villager.goal_ = dummy;
+            if (villager.isDead()) {
+                return;
+            }
             villager.attacking_ = false;
         });
 

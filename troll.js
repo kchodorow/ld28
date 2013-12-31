@@ -17,7 +17,8 @@ trolls.Troll = function() {
     goog.object.extend(this, new lib.Tag(['troll']));
 
     // Health
-    goog.object.extend(this, new trolls.Health(100));
+    goog.object.extend(
+        this, new trolls.Health(100).setChangeCallback(this.onDeath));
 
     // Bonuses
     this.powers_ = [];
@@ -42,8 +43,6 @@ trolls.Troll = function() {
 
 goog.inherits(trolls.Troll, lime.Sprite);
 
-trolls.Troll.prototype.id = 'Troll';
-
 // px/ms
 trolls.Troll.SPEED = .05;
 trolls.Troll.BASE_ATTACK = 3;
@@ -62,19 +61,6 @@ trolls.Troll.create = function(village, pos) {
 
 trolls.Troll.prototype.getName = function() {
     return this.name_;
-};
-
-trolls.Troll.prototype.addHealthBar = function() {
-    if ('health_bar_' in this) {
-        return;
-    }
-    var progress_bar = new lib.ProgressBar();
-    progress_bar.setBackgroundColor(trolls.resources.DARK_GREEN);
-    progress_bar.setForegroundColor(trolls.resources.GREEN);
-    progress_bar.setDimensions(new goog.math.Size(this.getSize().width, 6));
-    progress_bar.setPosition(0, -LEN);
-    this.appendChild(progress_bar);
-    this.health_bar_ = progress_bar;
 };
 
 trolls.Troll.prototype.getAttackees = function() {
@@ -111,7 +97,7 @@ trolls.Troll.prototype.smashed_ = function(target) {
             target.attachTo(this);
         }
     } else {
-        target.smoosh(trolls.Troll.BASE_ATTACK+this.attack_);
+        target.changeHealth(-trolls.Troll.BASE_ATTACK+this.attack_);
     }
 
     this.attacking_ = false;
@@ -135,19 +121,16 @@ trolls.Troll.prototype.choose = function() {
     this.step = this.controlledStep;
 };
 
+trolls.Troll.prototype.onDeath = function() {
+    if (this.health_ == 0) {
+        this.runAction(new lime.animation.FadeTo(0));
+        // TODO: Remove from actors?
+    }
+};
+
 trolls.Troll.prototype.unchoose = function() {
     this.removeChild(this.marker_);
     this.step = trolls.DumbMove.step;
-};
-
-trolls.Troll.prototype.changeHealth = function(amount) {
-    this.health_ += amount;
-    this.health_bar_.updateProgress(amount);
-
-    if (this.health_ == 0) {
-        this.dead_ = true;
-        this.runAction(new lime.animation.FadeTo(0));
-    }
 };
 
 trolls.Troll.prototype.distanceToGoal = function() {

@@ -43,7 +43,8 @@ trolls.data.Village.prototype.getPowerUps = function() {
 trolls.data.Hut = function(pos) {
     lime.Sprite.call(this);
 
-    goog.object.extend(this, new trolls.Health(20));
+    goog.object.extend(
+        this, new trolls.Health(20).setChangeCallback(this.smoosh));
     this.squishiness_ = 1;
     this.setAnchorPoint(.5, 1).setPosition(pos)
         .setFill(trolls.resources.getHut());
@@ -51,8 +52,6 @@ trolls.data.Hut = function(pos) {
 };
 
 goog.inherits(trolls.data.Hut, lime.Sprite);
-
-trolls.data.Hut.prototype.id = "Hut";
 
 trolls.data.Hut.create = function(village, pos) {
     var hut = new trolls.data.Hut().setPosition(pos);
@@ -64,13 +63,11 @@ trolls.data.Hut.create = function(village, pos) {
     return hut;
 };
 
-trolls.data.Hut.prototype.smoosh = function(damage) {
-    this.changeHealth(-damage);
+trolls.data.Hut.prototype.smoosh = function() {
     if (this.health_ > 0) {
         this.squishiness_ *= .9;
         this.runAction(
-            new lime.animation.ScaleTo(1, this.squishiness_)
-                .setEasing(lime.animation.Easing.LINEAR));
+            new lime.animation.ScaleTo(1, this.squishiness_));
     } else {
         var action = new lime.animation.ScaleTo(1, 0);
         this.runAction(action);
@@ -79,10 +76,6 @@ trolls.data.Hut.prototype.smoosh = function(damage) {
             goog.bind(trolls.controller.removeThing, trolls.controller));
         trolls.controller.changeMorale(trolls.resources.MORALE.HUT_SMOOSH);
     }
-};
-
-trolls.data.Hut.prototype.isDead = function() {
-    return this.health_ <= 0;
 };
 
 trolls.data.Hut.hut_ = {};

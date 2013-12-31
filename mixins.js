@@ -187,18 +187,54 @@ trolls.Direction.prototype.stop = function() {
 
 trolls.Health = function(max) {
     this.health_ = this.max_health_ = max;
+    this.change_cb_ = null;
+};
+
+trolls.Health.prototype.setChangeCallback = function(cb) {
+    this.change_cb_ = cb;
+    return this;
+};
+
+trolls.Health.prototype.addHealthBar = function() {
+    if ('health_bar_' in this) {
+        return;
+    }
+
+    this.health_bar_ = new lib.ProgressBar()
+        .setBackgroundColor(trolls.resources.DARK_GREEN)
+        .setForegroundColor(trolls.resources.GREEN)
+        .setDimensions(new goog.math.Size(this.getSize().width, 6))
+        .setPosition(0, -LEN);
+    this.appendChild(this.health_bar_);
 };
 
 trolls.Health.prototype.changeHealth = function(amount) {
     this.health_ += amount;
-    this.appendChild(lib.pointLabel(amount).setPosition(0, -LEN));
+    this.addHealthLabel_(amount);
+
+    if ('health_bar_' in this) {
+        this.health_bar_.updateProgress(amount);
+    }
+
     if (this.health_ > this.max_health_) {
         this.health_ = this.max_health_;
-    } else if (this.health_ < 0) {
+    } else if (this.health_ <= 0) {
         this.health_ = 0;
+        this.change_cb_();
     }
 };
 
 trolls.Health.prototype.isDead = function() {
     return this.health_ <= 0;
+};
+
+trolls.Health.prototype.addHealthLabel_ = function(amount) {
+    var label = lib.pointLabel(amount).setPosition(0, -LEN);
+    // If the sprite is mirrored, mirror the label, too.
+    if ('facing_' in this) {
+        if (this.facing_ == lib.Direction.LEFT) {
+            label.setScale(-1, 0);
+        }
+    }
+    this.appendChild(label);
 };
