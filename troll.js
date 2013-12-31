@@ -11,14 +11,8 @@ goog.require('trolls.DumbMove');
 trolls.Troll = function() {
     lime.Sprite.call(this);
 
-    var first_idx = lib.random(trolls.Troll.given_name_.length);
-    var last_idx = lib.random(trolls.Troll.suffix_.length);
-    this.name_ = trolls.Troll.given_name_[first_idx]+" "+
-	trolls.Troll.suffix_[last_idx]
-    goog.array.removeAt(trolls.Troll.given_name_, first_idx);
-    goog.array.removeAt(trolls.Troll.suffix_, last_idx);
-    this.health_ = this.max_health_ = 100;
-    this.goal_ = null;
+    // Identifiers
+    this.name_ = trolls.Troll.getName();
 
     // Bonuses
     this.powers_ = [];
@@ -165,6 +159,17 @@ trolls.Troll.prototype.controlledStep = function(dt) {
 };
 
 // Names
+
+trolls.Troll.getName = function() {
+    var first_idx = lib.random(trolls.Troll.given_name_.length);
+    var last_idx = lib.random(trolls.Troll.suffix_.length);
+    var name = trolls.Troll.given_name_[first_idx]+" "+
+        trolls.Troll.suffix_[last_idx];
+    goog.array.removeAt(trolls.Troll.given_name_, first_idx);
+    goog.array.removeAt(trolls.Troll.suffix_, last_idx);
+    return name;
+};
+
 trolls.Troll.given_name_ = [
     "Grog", "Ogg", "Brog", "Ploog", "Zorg", "Zorn", "Frampton", "Mush-Nose",
     "Froog", "Blatt", "Poob", "Rawr", "Drob", "Woob", "Splum", "Bj\u00F8rn",
