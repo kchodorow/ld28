@@ -30,11 +30,12 @@ trolls.Troll = function() {
     // Movement
     goog.object.extend(this, new lib.Direction(this));
     goog.object.extend(
-	this, new trolls.Direction()
-	    .setWalk(
-		goog.bind(trolls.resources.getTrollWalk, trolls.resources))
-	    .setStop(
-		goog.bind(trolls.resources.getTroll, trolls.resources)));
+        this, new trolls.Direction()
+            .setWalk(
+                goog.bind(trolls.resources.getTrollWalk, trolls.resources))
+            .setStop(
+                goog.bind(trolls.resources.getTroll, trolls.resources)));
+    this.appendChild(this.sight_);
     goog.object.extend(this, trolls.DumbMove);
     this.is_moving_ = false;
 
@@ -57,7 +58,7 @@ trolls.Troll.prototype.getName = function() {
 
 trolls.Troll.prototype.addHealthBar = function() {
     if ('health_bar_' in this) {
-	return;
+        return;
     }
     var progress_bar = new lib.ProgressBar();
     progress_bar.setBackgroundColor(trolls.resources.DARK_GREEN);
@@ -71,9 +72,9 @@ trolls.Troll.prototype.addHealthBar = function() {
 trolls.Troll.prototype.changeHealth = function(amount) {
     this.health_ += amount;
     if (this.health_ > this.max_health_) {
-	this.health_ = this.max_health_;
+        this.health_ = this.max_health_;
     } else if (this.health_ < 0) {
-	this.health_ = 0;
+        this.health_ = 0;
     }
 };
 
@@ -86,8 +87,8 @@ trolls.Troll.prototype.attack = function(target) {
     this.runAction(attack);
 
     goog.events.listen(
-	attack, lime.animation.Event.STOP, 
-	goog.bind(this.smashed_, this, target));
+        attack, lime.animation.Event.STOP,
+        goog.bind(this.smashed_, this, target));
 };
 
 trolls.Troll.prototype.smashed_ = function(target) {
@@ -116,12 +117,12 @@ trolls.Troll.prototype.smashed_ = function(target) {
 
 trolls.Troll.prototype.visualSmash_ = function() {
     var smash = new lime.Circle().setSize(30, 5).setOpacity(.5)
-	.setPosition(0, LEN/2).setFill(trolls.resources.RED);
+            .setPosition(0, LEN/2).setFill(trolls.resources.RED);
     smash.runAction(
-    	new lime.animation.Spawn(
-     	    new lime.animation.ScaleTo(5, 4)
-     		.setEasing(lime.animation.Easing.LINEAR),
-     	    new lime.animation.FadeTo(0)));
+        new lime.animation.Spawn(
+            new lime.animation.ScaleTo(5, 4)
+                .setEasing(lime.animation.Easing.LINEAR),
+            new lime.animation.FadeTo(0)));
     this.appendChild(smash);
 };
 
@@ -142,24 +143,24 @@ trolls.Troll.prototype.changeHealth = function(amount) {
     this.health_bar_.updateProgress(amount);
 
     if (this.health_ == 0) {
-	this.dead_ = true;
-	this.runAction(new lime.animation.FadeTo(0));
+        this.dead_ = true;
+        this.runAction(new lime.animation.FadeTo(0));
     }
 };
 
 trolls.Troll.prototype.distanceToGoal = function() {
     if (!this.goal_) {
-	return WIDTH*HEIGHT;
+        return WIDTH*HEIGHT;
     }
     return goog.math.Coordinate.distance(
-	this.getPosition(), this.goal_.getPosition());
+        this.getPosition(), this.goal_.getPosition());
 };
 
 trolls.Troll.prototype.controlledStep = function(dt) {
     var distance = trolls.Troll.SPEED * dt;
     this.setPosition(
-	this.getPosition().translate(
-	    distance*this.direction_.x, distance*this.direction_.y));
+        this.getPosition().translate(
+            distance*this.direction_.x, distance*this.direction_.y));
     return;
 };
 

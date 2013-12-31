@@ -23,9 +23,9 @@ goog.inherits(trolls.data.Village, lime.Sprite);
 
 trolls.data.Village.prototype.addHuts = function() {
     var hut_cluster = new lib.Cluster()
-	.setCreator(goog.bind(trolls.data.Hut.create, null, this))
-	.setBoundingBox(new goog.math.Box(-250, 400, 250, -200))
-	.setMap(trolls.map).generate();
+            .setCreator(goog.bind(trolls.data.Hut.create, null, this))
+            .setBoundingBox(new goog.math.Box(-250, 400, 250, -200))
+            .setMap(trolls.map).generate();
 };
 
 trolls.data.Village.prototype.addVillagers = function() {
@@ -34,9 +34,11 @@ trolls.data.Village.prototype.addVillagers = function() {
     var MAX_VILLAGERS = 30;
     var num_villagers = lib.random(MIN_VILLAGERS, MAX_VILLAGERS);
     var villager_cluster = new lib.Cluster()
-        .setCreator(goog.bind(trolls.Villager.create, null, this))
-	.setBoundingBox(new goog.math.Box(-250, 400, 250, -200))
-	.setMap(trolls.map).generate();
+            .setCreator(goog.bind(trolls.Villager.create, null, this))
+            .setBoundingBox(new goog.math.Box(-250, 400, 250, -200))
+            .setMap(trolls.map);
+    // TODO: set min/max
+    villager_cluster.generate();
 };
 
 trolls.data.Village.prototype.getVillagers = function() {
@@ -67,7 +69,7 @@ trolls.data.Hut = function(pos) {
     this.health_ = 20;
     this.squishiness_ = 1;
     this.setAnchorPoint(.5, 1).setPosition(pos)
-	.setFill(trolls.resources.getHut());
+        .setFill(trolls.resources.getHut());
     goog.object.extend(this, new lib.Tag(['hut']));
 };
 
@@ -86,15 +88,15 @@ trolls.data.Hut.prototype.smoosh = function(damage) {
     this.appendChild(lib.pointLabel(-damage).setPosition(0, -LEN));
     if (this.health_ > 0) {
         this.squishiness_ *= .9;
-	this.runAction(
+        this.runAction(
             new lime.animation.ScaleTo(1, this.squishiness_)
                 .setEasing(lime.animation.Easing.LINEAR));
     } else {
-	var action = new lime.animation.ScaleTo(1, 0);
-	this.runAction(action);
-	goog.events.listen(
-	    action, lime.animation.Event.STOP,
-	    goog.bind(trolls.controller.removeHut, trolls.controller));
-	trolls.controller.changeMorale(trolls.resources.MORALE.HUT_SMOOSH);
+        var action = new lime.animation.ScaleTo(1, 0);
+        this.runAction(action);
+        goog.events.listen(
+            action, lime.animation.Event.STOP,
+            goog.bind(trolls.controller.removeThing, trolls.controller));
+        trolls.controller.changeMorale(trolls.resources.MORALE.HUT_SMOOSH);
     }
 };

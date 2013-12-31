@@ -3,16 +3,16 @@ goog.provide('trolls.DumbMove');
 
 trolls.DumbMove.step = function(dt) {
     if (this.dead_) {
-	return;
+        return;
     }
 
     // See if there are any targets nearby.
     if (this.canSeeTarget()) {
-	// If so, head towards them for stompage.
-	this.moveTowardsTarget(dt);
+        // If so, head towards them for stompage.
+        this.moveTowardsTarget(dt);
     } else {
-	// Otherwise, wander around.
-	this.randomWalk(dt);
+        // Otherwise, wander around.
+        this.randomWalk(dt);
     }
 };
 
@@ -49,15 +49,15 @@ trolls.DumbMove.canSeeTarget = function() {
     this.sight_.setPosition((right-left)/2, (bottom-top)/2);
     var results = trolls.map.findInBox(box, this.getAttackees());
     if (results.length > 0) {
-	this.target_ = results[0];
-	return true;
+        this.target_ = results[0];
+        return true;
     }
     return false;
 };
 
 trolls.DumbMove.moveTowardsTarget = function(dt) {
     if (this.attacking_) {
-	return;
+        return;
     }
 
     var distance = dt*this.speed_;
@@ -66,12 +66,12 @@ trolls.DumbMove.moveTowardsTarget = function(dt) {
 
     var vec = goog.math.Vec2.difference(target_pos, start_pos);
     if (vec.x != 0 || vec.y != 0) {
-	vec = vec.normalize().scale(Math.sqrt(distance));
-	this.setPosition(start_pos.translate(vec));
+        vec = vec.normalize().scale(Math.sqrt(distance));
+        this.setPosition(start_pos.translate(vec));
     }
 
     if (goog.math.Coordinate.distance(start_pos, target_pos) < LEN) {
-	this.attack(this.target_);
+        this.attack(this.target_);
     }
 };
 

@@ -11,11 +11,11 @@ trolls.Villager = function() {
     goog.object.extend(this, trolls.DumbMove);
 
     goog.object.extend(
-	this, new trolls.Direction()
-	    .setWalk(
-		goog.bind(trolls.resources.getVillagerWalk, trolls.resources))
-	    .setStop(
-		goog.bind(trolls.resources.getVillager, trolls.resources)));
+        this, new trolls.Direction()
+            .setWalk(
+                goog.bind(trolls.resources.getVillagerWalk, trolls.resources))
+            .setStop(
+                goog.bind(trolls.resources.getVillager, trolls.resources)));
 };
 
 goog.inherits(trolls.Villager, lime.Sprite);
@@ -39,14 +39,14 @@ trolls.Villager.prototype.smoosh = function(damage) {
     var action = new lime.animation.ScaleTo(1, 0)
     this.runAction(action);
     goog.events.listen(
-	action, lime.animation.Event.STOP,
+        action, lime.animation.Event.STOP,
 	goog.bind(trolls.controller.removeVillager, trolls.controller));
     trolls.controller.changeMorale(trolls.resources.MORALE.VILLAGER_SMOOSH);
 };
 
 trolls.Villager.prototype.attack = function(target) {
     if (!target.isA('troll')) {
-	return;
+        return;
     }
     var villager = this;
     var action = trolls.resources.getVillagerAttack();

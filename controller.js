@@ -15,7 +15,8 @@ trolls.Controller = function(director) {
 trolls.Controller.prototype.begin = function(troll) {
     this.choose(troll);
     this.scene_ = new trolls.scenes.Main();
-    goog.events.listen(this.scene_, ['keydown'], goog.partial(this.keydown, this));
+    goog.events.listen(
+        this.scene_, ['keydown'], goog.partial(this.keydown, this));
     goog.events.listen(this.scene_, ['keyup'], goog.partial(this.keyup, this));
     lime.scheduleManager.schedule(this.step, this);
     this.director_.replaceScene(this.scene_);
@@ -27,7 +28,7 @@ trolls.Controller.prototype.endScene = function() {
     this.director_.replaceScene(trolls.pickerScene());
     this.actors_ = [];
     for (var i = 0; i < this.trolls_.length; ++i) {
-	this.trolls_[i].walk_.stop();
+        this.trolls_[i].walk_.stop();
     }
     goog.array.extend(this.actors_, this.trolls_);
     lime.scheduleManager.unschedule(this.step, this);
@@ -38,27 +39,27 @@ trolls.Controller.prototype.keydown = function(controller, e) {
     case goog.events.KeyCodes.LEFT:
     case goog.events.KeyCodes.A:
     case goog.events.KeyCodes.A+32:
-	controller.controlled_.setDirection(new goog.math.Vec2(-1, 0));
-	break;
+        controller.controlled_.setDirection(new goog.math.Vec2(-1, 0));
+        break;
     case goog.events.KeyCodes.RIGHT:
     case goog.events.KeyCodes.D:
     case goog.events.KeyCodes.D+32:
-	controller.controlled_.setDirection(new goog.math.Vec2(1, 0));
-	break;
+        controller.controlled_.setDirection(new goog.math.Vec2(1, 0));
+        break;
     case goog.events.KeyCodes.UP:
     case goog.events.KeyCodes.W:
     case goog.events.KeyCodes.W+32:
-	controller.controlled_.setDirection(new goog.math.Vec2(0, -1));
-	break;
+        controller.controlled_.setDirection(new goog.math.Vec2(0, -1));
+        break;
     case goog.events.KeyCodes.DOWN:
     case goog.events.KeyCodes.S:
     case goog.events.KeyCodes.S+32:
-	controller.controlled_.setDirection(new goog.math.Vec2(0, 1));
-	break;
+        controller.controlled_.setDirection(new goog.math.Vec2(0, 1));
+        break;
     case goog.events.KeyCodes.SPACE:
     case goog.events.KeyCodes.ENTER:
-	controller.controlled_.attack();
-	break;
+        controller.controlled_.attack();
+        break;
     case goog.events.KeyCodes.ZERO:
     case goog.events.KeyCodes.ONE:
     case goog.events.KeyCodes.TWO:
@@ -139,7 +140,7 @@ trolls.Controller.prototype.addHud = function(hud) {
 trolls.Controller.prototype.addVillage = function(village) {
     this.village_ = village;
     for (var i = 0; i < village.villagers_.length; i++) {
-	this.addActor(village.villagers_[i]);
+        this.addActor(village.villagers_[i]);
     }
 };
 
