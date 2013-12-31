@@ -13,13 +13,15 @@ trolls.Troll = function() {
 
     // Identifiers
     this.name_ = trolls.Troll.getName();
+    lib.Debug.attach(this);
+    goog.object.extend(this, new lib.Tag(['troll']));
 
     // Bonuses
+    this.health_ = this.max_health_ = 100;
     this.powers_ = [];
     this.defense_ = 0;
     this.attack_ = 0;
     this.speed_ = trolls.Troll.SPEED;
-//    this.appendChild(this.sight_);
 
     // Movement
     goog.object.extend(this, new lib.Direction(this));
@@ -34,8 +36,6 @@ trolls.Troll = function() {
     this.is_moving_ = false;
 
     this.setFill(trolls.resources.getTroll());
-    lib.Debug.attach(this);
-    goog.object.extend(this, new lib.Tag(['troll']));
 };
 
 goog.inherits(trolls.Troll, lime.Sprite);
@@ -77,6 +77,7 @@ trolls.Troll.prototype.getAttackees = function() {
 };
 
 trolls.Troll.prototype.attack = function(target) {
+    this.attacking_ = true;
     var attack = trolls.resources.getTrollAttack();
     this.runAction(attack);
 
@@ -89,24 +90,26 @@ trolls.Troll.prototype.smashed_ = function(target) {
     this.visualSmash_();
 
     if (!target) {
-	var sight = this.sight_.getFrame().clone()
-	    .translate(this.getPosition());
-	nearest = trolls.map.findNearestInBox(
-	    this, sight, ["powerup", "hut", "villager"]);
-	if (!nearest) {
-	    return;
-	}
+        var sight = this.sight_.getFrame().clone()
+                .translate(this.getPosition());
+        target = trolls.map.findNearestInBox(
+            this, sight, ["powerup", "hut", "villager"]);
+        if (!target) {
+            return;
+        }
     }
 
-    if (nearest.isA('powerup')) {
-     	if (nearest.inquire) {
-     	    controller.hud_.inquireAbout(nearest);
-	} else {
-     	    nearest.attachTo(this);
-	}
+    if (target.isA('powerup')) {
+        if (target.inquire) {
+            controller.hud_.inquireAbout(target);
+        } else {
+            target.attachTo(this);
+        }
     } else {
-	nearest.smoosh(trolls.Troll.BASE_ATTACK+this.attack_);
+        target.smoosh(trolls.Troll.BASE_ATTACK+this.attack_);
     }
+
+    this.attacking_ = false;
 };
 
 trolls.Troll.prototype.visualSmash_ = function() {

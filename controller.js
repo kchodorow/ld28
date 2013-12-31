@@ -69,63 +69,17 @@ trolls.Controller.prototype.keydown = function(controller, e) {
     case goog.events.KeyCodes.SIX:
     case goog.events.KeyCodes.SEVEN:
     case goog.events.KeyCodes.EIGHT:
-	var power = 
-	    new trolls.data.Power.types_[
-		e.event.keyCode - goog.events.KeyCodes.ZERO]();
-	power.attachTo(controller.controlled_);
-	break;
-    case goog.events.KeyCodes.META:
-	controller.meta_ = true;
-	break;
-    case goog.events.KeyCodes.R:
-    case goog.events.KeyCodes.R+32:
-	if (controller.meta_) {
-	    location.reload();
-	}
-	break;
+        var power =
+            new trolls.data.Power.types_[
+                e.event.keyCode - goog.events.KeyCodes.ZERO]();
+        power.attachTo(controller.controlled_);
+        break;
     }
     return true;
 };
 
 trolls.Controller.prototype.keyup = function(controller, e) {
     controller.controlled_.setDirection(new goog.math.Vec2(0, 0));
-    controller.meta_ = false;
-};
-
-trolls.Controller.prototype.findTarget = function(actor) {
-    // var villagers = this.village_.getVillagers();
-    // var num = villagers.length;
-    // for (var i = 0; i < num; ++i) {
-    // 	if (goog.math.Coordinate.distance(
-    // 	    villagers[i].getPosition(), actor.getPosition()) < LEN) {
-    // 	    return villagers[i];
-    // 	}
-    // }
-    // return null;
-};
-
-trolls.Controller.prototype.findVillagerTarget = function(actor) {
-//    if (lib.random(2) == 0) {
-	// 50% chance of troll
-//	return this.findClosestTarget_(actor, this.trolls_);
-  //  } else {
-	// 50% chance of hut
-//	return this.findClosestTarget_(actor, this.village_.getHuts());
-  //  }
-}
-
-trolls.Controller.prototype.findClosestTarget_ = function(actor, targets) {
-    // var min_distance = WIDTH*HEIGHT;
-    // var target = null;
-    // for (var i = 0; i < targets.length; ++i) {
-    // 	var distance = goog.math.Coordinate.distance(
-    // 	    targets[i].getPosition(), actor.getPosition());
-    // 	if (distance < min_distance) {
-    // 	    min_distance = distance;
-    // 	    target = targets[i];
-    // 	}
-    // }
-    // return target;
 };
 
 trolls.Controller.prototype.choose = function(troll) {
@@ -144,23 +98,18 @@ trolls.Controller.prototype.addVillage = function(village) {
     }
 };
 
-trolls.Controller.prototype.removeHut = function(e) {
+trolls.Controller.prototype.removeThing = function(e) {
     var hut = e.target.targets[0];
     var pos = hut.getPosition();
-    hut.getParent().removeChild(hut);
-    if (lib.random.percentChance(10)) {
-	var power = trolls.data.Power.getRandom();
-	this.village_.addPower(power, pos);
+    console.log("Removing "+goog.getUid(hut));
+    if (hut.getParent() == null) {
+        return;
     }
-};
-
-trolls.Controller.prototype.removeVillager = function(e) {
-    var hut = e.target.targets[0];
-    var pos = hut.getPosition();
-    this.village_.removeVillager(hut);
-    if (lib.random(3) == 0) {
-	var power = trolls.data.Power.getRandom();
-	this.village_.addPower(power, pos);
+    hut.getParent().removeChild(hut);
+    trolls.map.remove(hut);
+    if (lib.random.percentChance(10)) {
+        var power = trolls.data.Power.getRandom();
+        this.village_.addPower(power, pos);
     }
 };
 

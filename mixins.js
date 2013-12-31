@@ -20,29 +20,29 @@ trolls.DumbMove.canSeeTarget = function() {
     var dir = this.direction_.clone();
     var top = 0, left = 0, bottom = 0, right = 0;
     var pos = this.getPosition();
-    if (dir.x == 0) {
-	left = pos.x - this.eyesight_;
-	right = pos.x + this.eyesight_;
-	if (dir.y == -1) {
-	    top = pos.y - this.eyesight_;
-	    bottom = pos.y;
-	} else if (dir.y == 1) {
-	    top = pos.y;
-	    bottom = pos.y + this.eyesight_;
-	} else { // dir.x == 0 && dir.y == 0
-	    top = pos.y - this.eyesight_;
-	    bottom = pos.y + this.eyesight_;
-	}
-    } else if (dir.y == 0) {
-	top = pos.y - this.eyesight_;
-	bottom = pos.y + this.eyesight_;
-	if (dir.x == -1) {
-	    left = pos.x - this.eyesight_;
-	    right = pos.x;
-	} else {  // dir.x == 1
-	    right = pos.x + this.eyesight_;
-	    left = pos.x;
-	}
+    if (Math.abs(dir.x) < .5) {
+        left = pos.x - this.eyesight_;
+        right = pos.x + this.eyesight_;
+        if (dir.y < -.5) {
+            top = pos.y - this.eyesight_;
+            bottom = pos.y;
+        } else if (dir.y > .5) {
+            top = pos.y;
+            bottom = pos.y + this.eyesight_;
+        } else { // dir.x == 0 && dir.y == 0
+            top = pos.y - this.eyesight_;
+            bottom = pos.y + this.eyesight_;
+        }
+    } else if (Math.abs(dir.y) < .5) {
+        top = pos.y - this.eyesight_;
+        bottom = pos.y + this.eyesight_;
+        if (dir.x < -.5) {
+            left = pos.x - this.eyesight_;
+            right = pos.x;
+        } else {  // dir.x > .5
+            right = pos.x + this.eyesight_;
+            left = pos.x;
+        }
     }
 
     var box = new goog.math.Box(top, right, bottom, left);

@@ -19,6 +19,8 @@ trolls.scenes.Main = function() {
             .setCreator(goog.bind(trolls.scenes.Main.addTroll, null, village))
             .setBoundingBox(new goog.math.Box(-250, -100, 100, -400))
             .setMap(trolls.map)
+            .setTags(['troll'])
+            .setMinDistance(0);
     troll_cluster.generate();
 
     var hud = new trolls.Hud();
