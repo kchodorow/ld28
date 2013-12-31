@@ -16,8 +16,10 @@ trolls.Troll = function() {
     lib.Debug.attach(this);
     goog.object.extend(this, new lib.Tag(['troll']));
 
+    // Health
+    goog.object.extend(this, new trolls.Health(100));
+
     // Bonuses
-    this.health_ = this.max_health_ = 100;
     this.powers_ = [];
     this.defense_ = 0;
     this.attack_ = 0;
@@ -61,15 +63,6 @@ trolls.Troll.prototype.addHealthBar = function() {
     progress_bar.setPosition(0, -LEN);
     this.appendChild(progress_bar);
     this.health_bar_ = progress_bar;
-};
-
-trolls.Troll.prototype.changeHealth = function(amount) {
-    this.health_ += amount;
-    if (this.health_ > this.max_health_) {
-        this.health_ = this.max_health_;
-    } else if (this.health_ < 0) {
-        this.health_ = 0;
-    }
 };
 
 trolls.Troll.prototype.getAttackees = function() {

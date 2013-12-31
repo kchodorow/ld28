@@ -3,7 +3,7 @@ goog.provide('trolls.Villager');
 trolls.Villager = function() {
     lime.Sprite.call(this);
 
-    this.health_ = 1;
+    goog.object.extend(this, new trolls.Health(1));
     this.setFill(trolls.resources.getVillager());
     goog.object.extend(this, new lib.Direction(this));
     this.faceRandom();
@@ -32,9 +32,7 @@ trolls.Villager.prototype.getAttackees = function() {
 };
 
 trolls.Villager.prototype.smoosh = function(damage) {
-    this.health_ -= damage;
-    this.dead_ = true;
-    this.appendChild(lib.pointLabel(-damage));
+    this.changeHealth(-damage);
     // Always 1-hit death
     var action = new lime.animation.ScaleTo(1, 0)
     this.runAction(action);

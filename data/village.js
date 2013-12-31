@@ -66,7 +66,7 @@ trolls.data.Village.prototype.getPowerUps = function() {
 trolls.data.Hut = function(pos) {
     lime.Sprite.call(this);
 
-    this.health_ = 20;
+    goog.object.extend(this, new trolls.Health(20));
     this.squishiness_ = 1;
     this.setAnchorPoint(.5, 1).setPosition(pos)
         .setFill(trolls.resources.getHut());
@@ -84,8 +84,7 @@ trolls.data.Hut.create = function(village, pos) {
 };
 
 trolls.data.Hut.prototype.smoosh = function(damage) {
-    this.health_ -= damage;
-    this.appendChild(lib.pointLabel(-damage).setPosition(0, -LEN));
+    this.changeHealth(-damage);
     if (this.health_ > 0) {
         this.squishiness_ *= .9;
         this.runAction(

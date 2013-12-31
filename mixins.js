@@ -1,18 +1,27 @@
 goog.provide('trolls.Direction');
 goog.provide('trolls.DumbMove');
+goog.provide('trolls.Health');
 
 trolls.DumbMove.step = function(dt) {
-    if (this.dead_) {
+    if (this.isDead() || this.attacking_) {
         return;
     }
 
-    // See if there are any targets nearby.
-    if (this.canSeeTarget()) {
-        // If so, head towards them for stompage.
-        this.moveTowardsTarget(dt);
-    } else {
-        // Otherwise, wander around.
-        this.randomWalk(dt);
+    this.updateDirection();
+    this.move(dt);
+
+    this.updateTarget();
+};
+
+trolls.DumbMove.updateTarget = function() {
+    if (!this.target_ || this.target_.isDead()) {
+        return;
+    }
+
+    var target_pos = this.target_.getPosition();
+    if (goog.math.Coordinate.distance(
+        this.getPosition(), target_pos) < LEN) {
+        this.attack(this.target_);
     }
 };
 
@@ -55,44 +64,31 @@ trolls.DumbMove.canSeeTarget = function() {
     return false;
 };
 
-trolls.DumbMove.moveTowardsTarget = function(dt) {
-    if (this.attacking_) {
-        return;
-    }
+trolls.DumbMove.move = function(dt) {
+    var distance = Math.sqrt(dt*this.speed_);
+    var start_pos = this.getPosition().clone();
 
-    var distance = dt*this.speed_;
-    var start_pos = this.getPosition();
-    var target_pos = this.target_.getPosition();
-
-    var vec = goog.math.Vec2.difference(target_pos, start_pos);
-    if (vec.x != 0 || vec.y != 0) {
-        vec = vec.normalize().scale(Math.sqrt(distance));
-        this.setPosition(start_pos.translate(vec));
-        trolls.map.upsert(this);
-    }
-
-    if (goog.math.Coordinate.distance(start_pos, target_pos) < LEN) {
-        this.attack(this.target_);
-    }
-};
-
-trolls.DumbMove.randomWalk = function(dt) {
-    var PROBABILITY_OF_CHANGING_DIR = 15;
-    var PROBABILITY_OF_FOLLOWING = 2;
-    if (lib.random(PROBABILITY_OF_CHANGING_DIR) == 0) {
-        if (lib.random(PROBABILITY_OF_FOLLOWING) == 0) {
-            this.setDirection(this.getControlleeDirection());
-        } else {
-            this.setDirection(this.getRandomDirection());
-        }
-    }
-    var distance = dt*this.speed_;
-    var pos = this.getPosition().clone();
-    var new_pos = pos.translate(
-        this.direction_.clone().scale(Math.sqrt(distance)));
+    var new_pos = start_pos.translate(
+        this.direction_.clone().scale(distance));
     if (trolls.map.contains(new_pos)) {
         this.setPosition(new_pos);
         trolls.map.upsert(this);
+    }
+};
+
+trolls.DumbMove.updateDirection = function() {
+    var PROBABILITY_OF_CHANGING_DIR = 7;
+    if (lib.random.percentChance(PROBABILITY_OF_CHANGING_DIR)) {
+        if (lib.random.percentChance(50)) {
+            // Wander around.
+            this.setDirection(this.getRandomDirection());
+        } else if (this.canSeeTarget()) {
+            // Head towards a target for stompage.
+            this.setDirection(this.getTargetDirection());
+        } else {
+            // Head towards controlled troll.
+            this.setDirection(this.getControlleeDirection());
+        }
     }
 };
 
@@ -119,6 +115,19 @@ trolls.DumbMove.getControlleeDirection = function() {
     }
 
     return dir.normalize();
+};
+
+trolls.DumbMove.getTargetDirection = function() {
+    if (!this.target_) {
+        return this.getRandomDirection();
+    }
+
+    var direction = goog.math.Vec2.difference(
+        this.target_.getPosition(), this.getPosition());
+    if (direction.magnitude() == 0) {
+        return direction;
+    }
+    return direction.normalize();
 };
 
 trolls.Direction = function() {
@@ -174,4 +183,22 @@ trolls.Direction.prototype.stop = function() {
     this.walk_.stop();
     this.is_moving_ = false;
     this.setFill(this.stop_cb_());
+};
+
+trolls.Health = function(max) {
+    this.health_ = this.max_health_ = max;
+};
+
+trolls.Health.prototype.changeHealth = function(amount) {
+    this.health_ += amount;
+    this.appendChild(lib.pointLabel(amount).setPosition(0, -LEN));
+    if (this.health_ > this.max_health_) {
+        this.health_ = this.max_health_;
+    } else if (this.health_ < 0) {
+        this.health_ = 0;
+    }
+};
+
+trolls.Health.prototype.isDead = function() {
+    return this.health_ <= 0;
 };
