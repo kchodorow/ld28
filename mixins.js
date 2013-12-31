@@ -68,6 +68,7 @@ trolls.DumbMove.moveTowardsTarget = function(dt) {
     if (vec.x != 0 || vec.y != 0) {
         vec = vec.normalize().scale(Math.sqrt(distance));
         this.setPosition(start_pos.translate(vec));
+        trolls.map.upsert(this);
     }
 
     if (goog.math.Coordinate.distance(start_pos, target_pos) < LEN) {
@@ -91,6 +92,7 @@ trolls.DumbMove.randomWalk = function(dt) {
 	this.direction_.clone().scale(Math.sqrt(distance)));
     if (trolls.map.contains(new_pos)) {
 	this.setPosition(new_pos);
+        trolls.map.upsert(this);
     }
 };
 
