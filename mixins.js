@@ -80,18 +80,18 @@ trolls.DumbMove.randomWalk = function(dt) {
     var PROBABILITY_OF_CHANGING_DIR = 15;
     var PROBABILITY_OF_FOLLOWING = 2;
     if (lib.random(PROBABILITY_OF_CHANGING_DIR) == 0) {
-	if (lib.random(PROBABILITY_OF_FOLLOWING) == 0) {
-	    this.setDirection(this.getControlleeDirection());
-	} else {
-	    this.setDirection(this.getRandomDirection());
-	}
+        if (lib.random(PROBABILITY_OF_FOLLOWING) == 0) {
+            this.setDirection(this.getControlleeDirection());
+        } else {
+            this.setDirection(this.getRandomDirection());
+        }
     }
     var distance = dt*this.speed_;
     var pos = this.getPosition().clone();
     var new_pos = pos.translate(
-	this.direction_.clone().scale(Math.sqrt(distance)));
+        this.direction_.clone().scale(Math.sqrt(distance)));
     if (trolls.map.contains(new_pos)) {
-	this.setPosition(new_pos);
+        this.setPosition(new_pos);
         trolls.map.upsert(this);
     }
 };
@@ -101,21 +101,21 @@ trolls.DumbMove.getRandomDirection = function() {
     var dir_x = lib.random(0, 3)-1;
     var dir_y = lib.random(0, 3)-1;
     if (lib.random(2) == 0) {
-	return new goog.math.Vec2(dir_x, dir_x == 0 ? dir_y : 0);
+        return new goog.math.Vec2(dir_x, dir_x == 0 ? dir_y : 0);
     } else {
-	return new goog.math.Vec2(dir_y == 0 ? dir_x : 0, dir_y);
+        return new goog.math.Vec2(dir_y == 0 ? dir_x : 0, dir_y);
     }
 };
 
 trolls.DumbMove.getControlleeDirection = function() {
     var goal = trolls.controller.controlled_;
     var distance = goog.math.Coordinate.distance(
-	goal.getPosition(), this.getPosition());
+        goal.getPosition(), this.getPosition());
     var dir = goog.math.Vec2.difference(goal.getPosition(), this.getPosition());
     if (dir.x == 0 && dir.y == 0) {
-	return this.getRandomDirection();
+        return this.getRandomDirection();
     } else if (distance <= 2*LEN) {
-	return dir.normalize().scale(-1);
+        return dir.normalize().scale(-1);
     }
 
     return dir.normalize();
@@ -127,7 +127,7 @@ trolls.Direction = function() {
     // This should really be in DumbMove or its own class.
     this.eyesight_ = 3*LEN;
     this.sight_ = new lime.Sprite().setSize(this.eyesight_, this.eyesight_)
-	.setFill(trolls.resources.YELLOW).setOpacity(.2);
+        .setFill(trolls.resources.YELLOW).setOpacity(.2);
 };
 
 trolls.Direction.prototype.setWalk = function(cb) {
@@ -143,24 +143,24 @@ trolls.Direction.prototype.setStop = function(cb) {
 trolls.Direction.prototype.setDirection = function(vec) {
     this.direction_ = vec;
     if (this.direction_.x > 0) {
-	this.faceRight();
-	this.walk();
+        this.faceRight();
+        this.walk();
     } else if (this.direction_.x < 0) {
-	this.faceLeft();
-	this.walk();
+        this.faceLeft();
+        this.walk();
     } else if (this.direction_.y != 0) {
-	// If the troll is walking up or down, continue walking in the direction
-	// that they were previously facing.
-	this.walk();
+        // If the troll is walking up or down, continue walking in the direction
+        // that they were previously facing.
+        this.walk();
     } else {
-	// x and y are 0.
-	this.stop();
+        // x and y are 0.
+        this.stop();
     }
 };
 
 trolls.Direction.prototype.walk = function() {
     if (this.is_moving_) {
-	return;
+        return;
     }
     this.walk_ = this.walk_cb_();
     this.runAction(this.walk_);
@@ -169,7 +169,7 @@ trolls.Direction.prototype.walk = function() {
 
 trolls.Direction.prototype.stop = function() {
     if (!this.is_moving_) {
-	return;
+        return;
     }
     this.walk_.stop();
     this.is_moving_ = false;
