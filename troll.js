@@ -39,6 +39,7 @@ trolls.Troll = function() {
     this.is_moving_ = false;
 
     this.setFill(trolls.resources.getTroll());
+    this.attackees_ = ["hut", "villager"];
 };
 
 goog.inherits(trolls.Troll, lime.Sprite);
@@ -64,7 +65,7 @@ trolls.Troll.prototype.getName = function() {
 };
 
 trolls.Troll.prototype.getAttackees = function() {
-    return ["powerup", "hut", "villager"];
+    return this.attackees_;
 };
 
 trolls.Troll.prototype.attack = function(target) {
@@ -83,8 +84,7 @@ trolls.Troll.prototype.smashed_ = function(target) {
     if (!target) {
         var sight = this.sight_.getFrame().clone()
                 .translate(this.getPosition());
-        target = trolls.map.findNearestInBox(
-            this, sight, ["powerup", "hut", "villager"]);
+        target = trolls.map.findNearestInBox(this, sight, this.getAttackees());
         if (!target) {
             return;
         }
@@ -119,6 +119,13 @@ trolls.Troll.prototype.choose = function() {
 //	.setFill(trolls.resources.RED);
 //    this.appendChild(this.marker_);
     this.step = this.controlledStep;
+    this.attackees_.push("powerup");
+};
+
+trolls.Troll.prototype.unchoose = function() {
+    this.removeChild(this.marker_);
+    this.step = trolls.DumbMove.step;
+    this.attackees_.pop();
 };
 
 trolls.Troll.prototype.onDeath = function() {
@@ -126,11 +133,6 @@ trolls.Troll.prototype.onDeath = function() {
         this.runAction(new lime.animation.FadeTo(0));
         // TODO: Remove from actors?
     }
-};
-
-trolls.Troll.prototype.unchoose = function() {
-    this.removeChild(this.marker_);
-    this.step = trolls.DumbMove.step;
 };
 
 trolls.Troll.prototype.distanceToGoal = function() {

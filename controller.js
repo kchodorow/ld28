@@ -98,21 +98,6 @@ trolls.Controller.prototype.addVillage = function(village) {
     }
 };
 
-trolls.Controller.prototype.removeThing = function(e) {
-    var hut = e.target.targets[0];
-    var pos = hut.getPosition();
-    console.log("Removing "+goog.getUid(hut));
-    if (hut.getParent() == null) {
-        return;
-    }
-    hut.getParent().removeChild(hut);
-    trolls.map.remove(hut);
-    if (lib.random.percentChance(10)) {
-        var power = trolls.data.Power.getRandom();
-        this.village_.addPower(power, pos);
-    }
-};
-
 trolls.Controller.prototype.addPower = function(power) {
     power.attachTo(this.controlled_);
 };

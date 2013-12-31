@@ -43,13 +43,18 @@ trolls.Villager.prototype.getAttackees = function() {
 };
 
 trolls.Villager.prototype.smoosh = function(damage) {
-    // Always 1-hit death
+    if (!this.getParent()) {
+        // Already dead by someone else's smoosh.
+        return;
+    }
+
+    // Otherwise, always 1-hit smoosh.
     var action = new lime.animation.ScaleTo(1, 0)
             .setEasing(lime.animation.Easing.LINEAR);
     this.runAction(action);
     action.listen(
         lime.animation.Event.STOP,
-        goog.bind(trolls.controller.removeThing, trolls.controller));
+        goog.bind(this.getScene().removeThing, this.getScene()));
     trolls.controller.changeMorale(trolls.resources.MORALE.VILLAGER_SMOOSH);
 };
 

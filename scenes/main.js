@@ -8,12 +8,12 @@ trolls.scenes.Main = function() {
     trolls.map = new lib.collision.GeoHash(
         new goog.math.Box(-HEIGHT/2, WIDTH/2, HEIGHT/2, -WIDTH/2));
 
-    var layer = new lime.Layer().setSize(WIDTH, HEIGHT).setAnchorPoint(.5, .5)
+    this.layer_ = new lime.Layer().setSize(WIDTH, HEIGHT).setAnchorPoint(.5, .5)
             .setPosition(WIDTH/2, HEIGHT/2);
-    this.appendChild(layer);
+    this.appendChild(this.layer_);
 
     this.village_ = new trolls.data.Village();
-    layer.appendChild(this.village_);
+    this.layer_.appendChild(this.village_);
 
     this.addHuts();
     this.addTrolls();
@@ -56,4 +56,25 @@ trolls.scenes.Main.prototype.addVillagers = function() {
             .setMinDistance(0);
     // TODO: set min/max
     villager_cluster.generate();
+};
+
+trolls.scenes.Main.prototype.removeThing = function(e) {
+    var thing = e.target.targets[0];
+    var pos = thing.getPosition();
+    if (thing.getParent() == null) {
+        return;
+    }
+    thing.getParent().removeChild(thing);
+    trolls.map.remove(thing);
+    this.maybeAddPowerUp_(pos);
+};
+
+trolls.scenes.Main.prototype.maybeAddPowerUp_ = function(pos) {
+    if (lib.random.percentChance(80)) {
+        return;
+    }
+
+    var power = trolls.data.Power.getRandom();
+    this.layer_.appendChild(power.setPosition(pos));
+    trolls.map.add(power);
 };

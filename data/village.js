@@ -12,32 +12,13 @@ trolls.data.Village = function() {
 
     this.setSize(WIDTH, HEIGHT);
     lib.style.setBackgroundFrame(this, trolls.resources.getGrass());
-
-    this.power_ups_ = [];
 };
 
 goog.inherits(trolls.data.Village, lime.Sprite);
 
-trolls.data.Village.prototype.getVillagers = function() {
-    return this.villagers_;
-};
-
-trolls.data.Village.prototype.getHuts = function() {
-    return this.huts_;
-};
-
-trolls.data.Village.prototype.addPower = function(power, pos) {
-    this.appendChild(power.setPosition(pos));
-    this.power_ups_.push(power);
-};
-
 trolls.data.Village.prototype.removePower = function(power) {
     this.removeChild(power);
     goog.array.remove(this.power_ups_, power);
-}
-
-trolls.data.Village.prototype.getPowerUps = function() {
-    return this.power_ups_;
 }
 
 trolls.data.Hut = function(pos) {
@@ -64,6 +45,11 @@ trolls.data.Hut.create = function(village, pos) {
 };
 
 trolls.data.Hut.prototype.smoosh = function() {
+    if (!this.getParent()) {
+        // Already smooshed.
+        return;
+    }
+
     if (this.health_ > 0) {
         this.squishiness_ *= .9;
         this.runAction(
@@ -73,7 +59,7 @@ trolls.data.Hut.prototype.smoosh = function() {
         this.runAction(action);
         goog.events.listen(
             action, lime.animation.Event.STOP,
-            goog.bind(trolls.controller.removeThing, trolls.controller));
+            goog.bind(this.getScene().removeThing, this.getScene()));
         trolls.controller.changeMorale(trolls.resources.MORALE.HUT_SMOOSH);
     }
 };
