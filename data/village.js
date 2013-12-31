@@ -14,32 +14,9 @@ trolls.data.Village = function() {
     lib.style.setBackgroundFrame(this, trolls.resources.getGrass());
 
     this.power_ups_ = [];
-
-    this.addHuts();
-    this.addVillagers();
 };
 
 goog.inherits(trolls.data.Village, lime.Sprite);
-
-trolls.data.Village.prototype.addHuts = function() {
-    var hut_cluster = new lib.Cluster()
-            .setCreator(goog.bind(trolls.data.Hut.create, null, this))
-            .setBoundingBox(new goog.math.Box(-250, 400, 250, -200))
-            .setMap(trolls.map).generate();
-};
-
-trolls.data.Village.prototype.addVillagers = function() {
-    this.villagers_ = [];
-    var MIN_VILLAGERS = 10;
-    var MAX_VILLAGERS = 30;
-    var num_villagers = lib.random(MIN_VILLAGERS, MAX_VILLAGERS);
-    var villager_cluster = new lib.Cluster()
-            .setCreator(goog.bind(trolls.Villager.create, null, this))
-            .setBoundingBox(new goog.math.Box(-250, 400, 250, -200))
-            .setMap(trolls.map);
-    // TODO: set min/max
-    villager_cluster.generate();
-};
 
 trolls.data.Village.prototype.getVillagers = function() {
     return this.villagers_;
@@ -80,6 +57,10 @@ trolls.data.Hut.prototype.id = "Hut";
 trolls.data.Hut.create = function(village, pos) {
     var hut = new trolls.data.Hut().setPosition(pos);
     village.appendChild(hut);
+
+    // Debugging.
+    lib.Debug.attach(hut);
+    trolls.data.Hut.hut_[goog.getUid(hut)] = hut;
     return hut;
 };
 
@@ -98,4 +79,14 @@ trolls.data.Hut.prototype.smoosh = function(damage) {
             goog.bind(trolls.controller.removeThing, trolls.controller));
         trolls.controller.changeMorale(trolls.resources.MORALE.HUT_SMOOSH);
     }
+};
+
+trolls.data.Hut.prototype.isDead = function() {
+    return this.health_ <= 0;
+};
+
+trolls.data.Hut.hut_ = {};
+
+trolls.data.Hut.get = function(i) {
+    return trolls.data.Hut.hut_[i];
 };

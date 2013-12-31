@@ -4,11 +4,12 @@ trolls.Villager = function() {
     lime.Sprite.call(this);
 
     goog.object.extend(this, new trolls.Health(1));
-    this.setFill(trolls.resources.getVillager());
+     this.setFill(trolls.resources.getVillager());
     goog.object.extend(this, new lib.Direction(this));
     this.faceRandom();
     this.speed_ = trolls.Villager.SPEED;
     goog.object.extend(this, trolls.DumbMove);
+    goog.object.extend(this, new lib.Tag(['villager']));
 
     goog.object.extend(
         this, new trolls.Direction()
@@ -16,9 +17,15 @@ trolls.Villager = function() {
                 goog.bind(trolls.resources.getVillagerWalk, trolls.resources))
             .setStop(
                 goog.bind(trolls.resources.getVillager, trolls.resources)));
+    this.appendChild(this.sight_);
+
+    lib.Debug.attach(this);
 };
 
 goog.inherits(trolls.Villager, lime.Sprite);
+
+// px/ms
+trolls.Villager.SPEED = .1;
 
 trolls.Villager.create = function(village, pos) {
     var villager = new trolls.Villager().setPosition(pos);
@@ -34,54 +41,38 @@ trolls.Villager.prototype.getAttackees = function() {
 trolls.Villager.prototype.smoosh = function(damage) {
     this.changeHealth(-damage);
     // Always 1-hit death
-    var action = new lime.animation.ScaleTo(1, 0)
+    var action = new lime.animation.ScaleTo(1, 0);
     this.runAction(action);
     goog.events.listen(
         action, lime.animation.Event.STOP,
-	goog.bind(trolls.controller.removeVillager, trolls.controller));
+        goog.bind(trolls.controller.removeThing, trolls.controller));
     trolls.controller.changeMorale(trolls.resources.MORALE.VILLAGER_SMOOSH);
 };
 
 trolls.Villager.prototype.attack = function(target) {
+    this.attacking_ = true;
     if (!target.isA('troll')) {
         return;
     }
+
+    // For closure access.
     var villager = this;
     var action = trolls.resources.getVillagerAttack();
     this.runAction(action);
     goog.events.listen(
-	action, lime.animation.Event.STOP,
-	function() {
-	    if (villager.dead_) {
-		return;
-	    }
-	    villager.attacking_ = false;
-	    var diff = goog.math.Coordinate.difference(
-		villager.getPosition(), villager.goal_.getPosition());
-	    var dummy = new lime.Node().setPosition(
-		villager.getPosition().clone().translate(diff.scale(3)));
-	    villager.goal_ = dummy;
-	    this.attacking_ = false;
-	});
+        action, lime.animation.Event.STOP,
+        function() {
+    //         if (villager.dead_) {
+    //             return;
+    //         }
+    //         villager.attacking_ = false;
+    //         var diff = goog.math.Coordinate.difference(
+    //             villager.getPosition(), target.getPosition());
+    //         var dummy = new lime.Node().setPosition(
+    //             villager.getPosition().clone().translate(diff.scale(3)));
+    //         villager.goal_ = dummy;
+            villager.attacking_ = false;
+        });
 
-    this.goal_.changeHealth(-1);
-};
-
-// px/ms
-trolls.Villager.SPEED = .1;
-
-trolls.Villager.prototype.step = function(dt) {
-    if (this.goal_ == null || this.goal_elapsed_ >= this.goal_expires_ms_) {
-	this.goal_ = trolls.controller.findVillagerTarget(this);
-	if (this.goal_ == null) {
-	    this.walk_.stop();
-	    this.setFill(trolls.resources.getVillager());
-	    return;
-	}
-	this.goal_elapsed_ = 0;
-	this.attacking_ = false;
-    }
-
-    this.move(dt);
-    this.goal_elapsed_ += dt;
+    target.changeHealth(-1);
 };

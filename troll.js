@@ -48,6 +48,18 @@ trolls.Troll.prototype.id = 'Troll';
 trolls.Troll.SPEED = .05;
 trolls.Troll.BASE_ATTACK = 3;
 
+trolls.Troll.troll_counter_ = 0;
+
+trolls.Troll.create = function(village, pos) {
+    var troll = trolls.getTroll(trolls.Troll.troll_counter_)
+            .setPosition(pos);
+    lib.Debug.attach(troll);
+    village.appendChild(troll);
+
+    trolls.Troll.troll_counter_ = (trolls.Troll.troll_counter_+1)%5;
+    return troll;
+};
+
 trolls.Troll.prototype.getName = function() {
     return this.name_;
 };
