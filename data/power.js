@@ -92,7 +92,7 @@ trolls.data.Power.Health = function() {
 goog.inherits(trolls.data.Power.Health, trolls.data.Power.BasePower);
 
 trolls.data.Power.Health.prototype.attachTo = function(troll) {
-    trolls.data.Power.BasePower.call(this);
+    goog.base(this, 'attachTo', troll);
     troll.changeHealth(this.bonus);
     this.points(troll);
 };
@@ -110,7 +110,7 @@ trolls.data.Power.Defense = function() {
 goog.inherits(trolls.data.Power.Defense, trolls.data.Power.BasePower);
 
 trolls.data.Power.Defense.prototype.attachTo = function(troll) {
-    trolls.data.Power.BasePower.call(this);
+    goog.base(this, 'attachTo', troll);
     troll.defense_ += this.bonus;
     this.points(troll);
 };
@@ -128,7 +128,7 @@ trolls.data.Power.Attack = function() {
 goog.inherits(trolls.data.Power.Attack, trolls.data.Power.BasePower);
 
 trolls.data.Power.Attack.prototype.attachTo = function(troll) {
-    trolls.data.Power.BasePower.call(this);
+    goog.base(this, 'attachTo', troll);
     troll.attack_ += this.bonus;
     this.points(troll);
 };
@@ -146,7 +146,7 @@ trolls.data.Power.Speed = function() {
 goog.inherits(trolls.data.Power.Speed, trolls.data.Power.BasePower);
 
 trolls.data.Power.Speed.prototype.attachTo = function(troll) {
-    trolls.data.Power.BasePower.call(this);
+    goog.base(this, 'attachTo', troll);
     troll.speed_ += this.bonus/100;
     this.points(troll);
 };
@@ -162,13 +162,22 @@ goog.inherits(trolls.data.Power.StinkingCloud, trolls.data.Power.BasePower);
 
 trolls.data.Power.StinkingCloud.prototype.attachTo = function(troll) {
     trolls.data.Power.BasePower.call(this);
-    troll.attack = this.attack;
+    troll.doDamage_ = this.attack;
     troll.custom_attack_ = 'Fart';
+    troll.last_fart_ = new Date().getTime();
 };
 
 trolls.data.Power.StinkingCloud.prototype.attack = function() {
+    var current_time = new Date().getTime();
+    if (this.last_fart_ + 1000 > current_time) {
+        // Rate limit.
+        return;
+    }
+
+    this.last_fart_ = current_time;
     var fart = new lime.Circle().setFill(trolls.resources.DARK_GREEN)
-            .setSize(LEN*3, LEN*3).setOpacity(.3).setPosition(this.getPosition());
+            .setSize(LEN*3, LEN*3).setOpacity(.3)
+            .setPosition(this.getPosition());
     this.getParent().appendChild(fart);
     fart.runAction(new lime.animation.FadeTo(0));
     trolls.controller.changeMorale(-10);
@@ -184,7 +193,7 @@ trolls.data.Power.TrollMask = function() {
 goog.inherits(trolls.data.Power.TrollMask, trolls.data.Power.BasePower);
 
 trolls.data.Power.TrollMask.prototype.attachTo = function(troll) {
-    trolls.data.Power.BasePower.call(this);
+    goog.base(this, 'attachTo', troll);
     troll.appendChild(
         new lime.Sprite().setFill(trolls.resources.getTrollMask()));
     var label = lib.pointLabel("Trololol");
@@ -204,7 +213,7 @@ trolls.data.Power.Bigger = function() {
 goog.inherits(trolls.data.Power.Bigger, trolls.data.Power.BasePower);
 
 trolls.data.Power.Bigger.prototype.attachTo = function(troll) {
-    trolls.data.Power.BasePower.call(this);
+    goog.base(this, 'attachTo', troll);
     troll.setSize(troll.getSize().scale(1.2));
     troll.defense_ += 1;
     troll.speed_ -= 1;
@@ -220,7 +229,7 @@ trolls.data.Power.Smaller = function() {
 goog.inherits(trolls.data.Power.Smaller, trolls.data.Power.BasePower);
 
 trolls.data.Power.Smaller.prototype.attachTo = function(troll) {
-    trolls.data.Power.BasePower.call(this);
+    goog.base(this, 'attachTo', troll);
     troll.setSize(troll.getSize().scale(.8));
     troll.attack_ -= 1;
     troll.speed_ += 1;
@@ -237,19 +246,35 @@ trolls.data.Power.Fireball = function() {
 goog.inherits(trolls.data.Power.Fireball, trolls.data.Power.BasePower);
 
 trolls.data.Power.Fireball.prototype.attachTo = function(troll) {
-    trolls.data.Power.BasePower.call(this);
-    troll.attack = this.attack;
+    goog.base(this, 'attachTo', troll);
+    troll.doDamage_ = this.attack;
     troll.custom_attack_ = 'Fireball';
+    troll.last_fireball_ = new Date().getTime();
 };
 
 trolls.data.Power.Fireball.prototype.attack = function() {
-    var fireball =
-            new lime.Sprite().setFill(trolls.resources.getFireball());
-    this.appendChild(fireball);
-    fireball.runAction(new lime.animation.MoveTo(this.goal_.getPosition()));
-    // TODO: on stop
-    this.goal_.smoosh();
-}
+    var current_time = new Date().getTime();
+    if (this.last_fireball_ + 1000 > current_time) {
+        // Rate limit.
+        return;
+    }
+
+    this.last_fireball_ = current_time;
+    var fireball = new lime.Circle().setFill(trolls.resources.RED)
+            .setSize(LEN*3, LEN*3).setOpacity(.3)
+            .setPosition(this.getPosition());
+    this.getParent().appendChild(fireball);
+    fireball.runAction(new lime.animation.FadeTo(0));
+
+    var pos = this.getPosition();
+    var box = new goog.math.Box(
+        pos.y-LEN*1.5, pos.x+LEN*1.5, pos.y+LEN*1.5, pos.x*LEN-1.5);
+    var enemies = trolls.map.findInBox(box, this.getAttackees());
+
+    for (var i in enemies) {
+        enemies.changeHealth(-1);
+    }
+};
 
 trolls.data.Power.types_ = [
     trolls.data.Power.Health,
@@ -260,5 +285,5 @@ trolls.data.Power.types_ = [
     trolls.data.Power.TrollMask,
     trolls.data.Power.Bigger,
     trolls.data.Power.Smaller,
-    trolls.data.Power.Fireball,
+    trolls.data.Power.Fireball
 ];

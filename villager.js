@@ -5,6 +5,7 @@ trolls.Villager = function() {
 
     // Make squishable from above.
     this.setAnchorPoint(.5, 1);
+    this.is_being_smooshed_ = false;
 
     goog.object.extend(
         this, new trolls.Health(1).setChangeCallback(this.smoosh));
@@ -21,7 +22,7 @@ trolls.Villager = function() {
                 goog.bind(trolls.resources.getVillagerWalk, trolls.resources))
             .setStop(
                 goog.bind(trolls.resources.getVillager, trolls.resources)));
-    this.appendChild(this.sight_);
+//    this.appendChild(this.sight_);
 
     lib.Debug.attach(this);
 };
@@ -43,10 +44,11 @@ trolls.Villager.prototype.getAttackees = function() {
 };
 
 trolls.Villager.prototype.smoosh = function(damage) {
-    if (!this.getParent()) {
+    if (this.is_being_smooshed_ || !this.getParent()) {
         // Already dead by someone else's smoosh.
         return;
     }
+    this.is_being_smooshed_ = true;
 
     // Otherwise, always 1-hit smoosh.
     var action = new lime.animation.ScaleTo(1, 0)

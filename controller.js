@@ -25,7 +25,7 @@ trolls.Controller.prototype.begin = function(troll) {
 // Go to the choose troll screen.
 trolls.Controller.prototype.endScene = function() {
     this.controlled_.unchoose();
-    this.director_.replaceScene(trolls.pickerScene());
+    this.director_.replaceScene(new trolls.scenes.Picker());
     this.actors_ = [];
     for (var i = 0; i < this.trolls_.length; ++i) {
         this.trolls_[i].walk_.stop();
@@ -118,7 +118,7 @@ trolls.Controller.prototype.addActor = function(thing) {
 };
 
 trolls.Controller.prototype.changeMorale = function(amount) {
-    this.hud_.changeMorale(amount);
+    this.hud_.updateProgress(amount);
 };
 
 trolls.Controller.prototype.step = function(dt) {
@@ -129,7 +129,7 @@ trolls.Controller.prototype.step = function(dt) {
 
     // in %
     var THRESHOLD = 5;
-    if (this.hud_.getMorale() < THRESHOLD) {
+    if (this.hud_.getProgress() <= THRESHOLD) {
         this.scene_.addEndButton();
     }
 };

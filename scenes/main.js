@@ -19,10 +19,17 @@ trolls.scenes.Main = function() {
     this.addTrolls();
     this.addVillagers();
 
-    var hud = new trolls.Hud();
-    hud.setPosition(WIDTH/2, 100);
-    trolls.controller.addHud(hud);
-    this.appendChild(hud);
+    var morale_meter = new lib.ProgressBar()
+            .setMax(this.num_villagers_)
+            .setPosition(WIDTH/2, 100)
+            .setForegroundColor(trolls.resources.getMoraleMeterFg())
+            .setBackgroundColor(trolls.resources.getMoraleMeterBg());
+    var label = lib.label('Villager morale').setPosition(0, -30);
+    morale_meter.appendChild(label);
+    trolls.controller.addHud(morale_meter);
+    this.appendChild(morale_meter);
+
+    this.end_button_ = null;
 };
 
 goog.inherits(trolls.scenes.Main, lime.Scene);
@@ -48,7 +55,7 @@ trolls.scenes.Main.prototype.addTrolls = function() {
 trolls.scenes.Main.prototype.addVillagers = function() {
     var MIN_VILLAGERS = 10;
     var MAX_VILLAGERS = 30;
-    var num_villagers = lib.random(MIN_VILLAGERS, MAX_VILLAGERS);
+    this.num_villagers_ = lib.random(MIN_VILLAGERS, MAX_VILLAGERS);
     var villager_cluster = new lib.Cluster()
             .setCreator(goog.bind(trolls.Villager.create, null, this.village_))
             .setBoundingBox(new goog.math.Box(-250, 400, 250, -200))
@@ -80,6 +87,10 @@ trolls.scenes.Main.prototype.maybeAddPowerUp_ = function(pos) {
 };
 
 trolls.scenes.Main.prototype.addEndButton = function() {
+    if (this.end_button_) {
+        return;
+    }
+
     var button_label = lib.label("Press <Enter> to finish rampage  \u2192");
     var button_size = button_label.getFrame().size().scale(1.05, 1.2);
     var button_sprite = new lime.RoundedRect()
@@ -98,5 +109,6 @@ trolls.scenes.Main.prototype.addEndButton = function() {
     });
 
     this.layer_.appendChild(button_sprite);
-    controller.ending_ = true;
+    this.end_button_ = button_sprite;
+    trolls.controller.ending_ = true;
 };

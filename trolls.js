@@ -14,7 +14,6 @@ goog.require('lime.animation.MoveTo');
 
 goog.require('lib');
 goog.require('trolls.Controller'); // Ha!
-goog.require('trolls.Hud');
 goog.require('trolls.Troll');
 goog.require('trolls.data.Resources');
 goog.require('trolls.data.Stats');
@@ -40,7 +39,7 @@ trolls.start = function(){
 	var troll = new trolls.Troll();
 	trolls.controller.addTroll(troll);
     }
-    
+
     director.makeMobileWebAppCapable();
     director.replaceScene(new trolls.scenes.Intro());
 };

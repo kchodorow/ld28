@@ -34,7 +34,7 @@ trolls.Troll = function() {
                 goog.bind(trolls.resources.getTrollWalk, trolls.resources))
             .setStop(
                 goog.bind(trolls.resources.getTroll, trolls.resources)));
-    this.appendChild(this.sight_);
+//    this.appendChild(this.sight_);
     goog.object.extend(this, trolls.DumbMove);
     this.is_moving_ = false;
 
@@ -93,10 +93,14 @@ trolls.Troll.prototype.smashed_ = function(target) {
     if (target.isA('powerup')) {
         target.inquireAbout(this.getScene());
     } else {
-        target.changeHealth(-trolls.Troll.BASE_ATTACK+this.attack_);
+        this.doDamage_(target);
     }
 
     this.attacking_ = false;
+};
+
+trolls.Troll.prototype.doDamage_ = function(target) {
+    target.changeHealth(-trolls.Troll.BASE_ATTACK+this.attack_);
 };
 
 trolls.Troll.prototype.visualSmash_ = function() {
