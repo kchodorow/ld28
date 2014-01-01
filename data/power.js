@@ -13,9 +13,9 @@ trolls.data.Power.BasePower = function() {
     lime.Sprite.call(this);
     this.setFill(trolls.resources.getPower());
     var pulse = new lime.animation.Sequence(
-	new lime.animation.ScaleTo(1.2), new lime.animation.ScaleTo(1.0));
+        new lime.animation.ScaleTo(1.2), new lime.animation.ScaleTo(1.0));
     this.runAction(new lime.animation.Loop(pulse));
-    this.inquire = false;
+    this.inquire_ = false;
     goog.object.extend(this, new lib.Tag(trolls.data.Power.TAGS));
 };
 
@@ -23,12 +23,61 @@ goog.inherits(trolls.data.Power.BasePower, lime.Sprite);
 
 trolls.data.Power.TAGS = ['powerup'];
 
+// Dialog for choosing the power.
+trolls.data.Power.BasePower.prototype.inquireAbout = function(scene) {
+    if (!this.inquire_) {
+        trolls.controller.addPower(this);
+        return;
+    }
+
+    var power = this;
+    var size = new goog.math.Size(500, 300);
+    var dialog = new lime.Sprite().setSize(size)
+            .setFill(trolls.resources.getDialogBg())
+            .setPosition(0, HEIGHT/2-size.height)
+            .setStroke(2, trolls.resources.DARK_GREEN);
+    var label = lib.label(
+        'Would you like this troll to acquire the power: '+this.name)
+            .setSize(size.width-40, size.height-40);
+    dialog.appendChild(label);
+
+    var yes = new lime.Sprite().setSize(100, 50).setStroke(1, '#000')
+            .setPosition(-70, 50);
+    yes.appendChild(lib.label('Yes'));
+    goog.events.listen(yes, ['mousedown', 'touchstart'], function(e) {
+        // TODO: nice sparkle animation for this
+        trolls.controller.addPower(power);
+        dialog.getParent().removeChild(dialog);
+    });
+    dialog.appendChild(yes);
+
+    var no = new lime.Sprite().setSize(100, 50).setStroke(1, '#000')
+            .setPosition(70, 50);
+    no.appendChild(lib.label('No'));
+    goog.events.listen(no, ['mousedown', 'touchstart'], function(e) {
+        dialog.getParent().removeChild(dialog);
+    });
+    dialog.appendChild(no);
+
+    scene.layer_.appendChild(dialog);
+};
+
 // Remove the powerup from the board.
 trolls.data.Power.BasePower.prototype.attachTo = function() {
     if (this.getParent()) {
-	this.getParent().removeChild(this);
+        this.getParent().removeChild(this);
+        trolls.map.remove(this);
     }
 };
+
+trolls.data.Power.BasePower.prototype.points = function(troll) {
+    var label = lib.pointLabel(this.name);
+    if (troll.facing_ == lib.Direction.LEFT) {
+        label.setScale(-1, 1);
+    }
+    troll.appendChild(label);
+};
+
 
 // Health
 
@@ -45,8 +94,8 @@ goog.inherits(trolls.data.Power.Health, trolls.data.Power.BasePower);
 trolls.data.Power.Health.prototype.attachTo = function(troll) {
     trolls.data.Power.BasePower.call(this);
     troll.changeHealth(this.bonus);
-    troll.appendChild(lib.pointLabel(this.name));
-}
+    this.points(troll);
+};
 
 // Defense
 
@@ -63,8 +112,8 @@ goog.inherits(trolls.data.Power.Defense, trolls.data.Power.BasePower);
 trolls.data.Power.Defense.prototype.attachTo = function(troll) {
     trolls.data.Power.BasePower.call(this);
     troll.defense_ += this.bonus;
-    troll.appendChild(lib.pointLabel(this.name));
-}
+    this.points(troll);
+};
 
 // Attack
 
@@ -81,7 +130,7 @@ goog.inherits(trolls.data.Power.Attack, trolls.data.Power.BasePower);
 trolls.data.Power.Attack.prototype.attachTo = function(troll) {
     trolls.data.Power.BasePower.call(this);
     troll.attack_ += this.bonus;
-    troll.appendChild(lib.pointLabel(this.name));
+    this.points(troll);
 };
 
 // Speed
@@ -99,7 +148,7 @@ goog.inherits(trolls.data.Power.Speed, trolls.data.Power.BasePower);
 trolls.data.Power.Speed.prototype.attachTo = function(troll) {
     trolls.data.Power.BasePower.call(this);
     troll.speed_ += this.bonus/100;
-    troll.appendChild(lib.pointLabel(this.name));
+    this.points(troll);
 };
 
 // Stinking cloud
@@ -107,7 +156,7 @@ trolls.data.Power.Speed.prototype.attachTo = function(troll) {
 trolls.data.Power.StinkingCloud = function() {
     trolls.data.Power.BasePower.call(this);
     this.name = "farting";
-    this.inquire = true;
+    this.inquire_ = true;
 };
 goog.inherits(trolls.data.Power.StinkingCloud, trolls.data.Power.BasePower);
 
@@ -119,7 +168,7 @@ trolls.data.Power.StinkingCloud.prototype.attachTo = function(troll) {
 
 trolls.data.Power.StinkingCloud.prototype.attack = function() {
     var fart = new lime.Circle().setFill(trolls.resources.DARK_GREEN)
-	.setSize(LEN*3, LEN*3).setOpacity(.3).setPosition(this.getPosition());
+            .setSize(LEN*3, LEN*3).setOpacity(.3).setPosition(this.getPosition());
     this.getParent().appendChild(fart);
     fart.runAction(new lime.animation.FadeTo(0));
     trolls.controller.changeMorale(-10);
@@ -130,15 +179,19 @@ trolls.data.Power.StinkingCloud.prototype.attack = function() {
 trolls.data.Power.TrollMask = function() {
     trolls.data.Power.BasePower.call(this);
     this.name = "warrior mask";
-    this.inquire = true;
+    this.inquire_ = true;
 };
 goog.inherits(trolls.data.Power.TrollMask, trolls.data.Power.BasePower);
 
 trolls.data.Power.TrollMask.prototype.attachTo = function(troll) {
     trolls.data.Power.BasePower.call(this);
     troll.appendChild(
-	new lime.Sprite().setFill(trolls.resources.getTrollMask()));
-    troll.appendChild(lib.pointLabel("Trololol"));
+        new lime.Sprite().setFill(trolls.resources.getTrollMask()));
+    var label = lib.pointLabel("Trololol");
+    if (this.facing_ == lib.Direction.LEFT) {
+        label.setScale(-1, 1);
+    }
+    troll.appendChild(label);
 };
 
 // Make bigger
@@ -146,7 +199,7 @@ trolls.data.Power.TrollMask.prototype.attachTo = function(troll) {
 trolls.data.Power.Bigger = function() {
     trolls.data.Power.BasePower.call(this);
     this.name = "embiggen";
-    this.inquire = true;
+    this.inquire_ = true;
 };
 goog.inherits(trolls.data.Power.Bigger, trolls.data.Power.BasePower);
 
@@ -162,7 +215,7 @@ trolls.data.Power.Bigger.prototype.attachTo = function(troll) {
 trolls.data.Power.Smaller = function() {
     trolls.data.Power.BasePower.call(this);
     this.name = "miniaturize";
-    this.inquire = true;
+    this.inquire_ = true;
 };
 goog.inherits(trolls.data.Power.Smaller, trolls.data.Power.BasePower);
 
@@ -179,7 +232,7 @@ trolls.data.Power.Fireball = function() {
     trolls.data.Power.BasePower.call(this);
     this.action = {attack : this.throwFireball};
     this.name = "fireball";
-    this.inquire = true;
+    this.inquire_ = true;
 };
 goog.inherits(trolls.data.Power.Fireball, trolls.data.Power.BasePower);
 
@@ -190,8 +243,8 @@ trolls.data.Power.Fireball.prototype.attachTo = function(troll) {
 };
 
 trolls.data.Power.Fireball.prototype.attack = function() {
-    var fireball = 
-	new lime.Sprite().setFill(trolls.resources.getFireball());
+    var fireball =
+            new lime.Sprite().setFill(trolls.resources.getFireball());
     this.appendChild(fireball);
     fireball.runAction(new lime.animation.MoveTo(this.goal_.getPosition()));
     // TODO: on stop

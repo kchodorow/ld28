@@ -57,7 +57,13 @@ trolls.Controller.prototype.keydown = function(controller, e) {
         controller.controlled_.setDirection(new goog.math.Vec2(0, 1));
         break;
     case goog.events.KeyCodes.SPACE:
+        controller.controlled_.attack();
+        break;
     case goog.events.KeyCodes.ENTER:
+        if (controller.ending_) {
+            controller.endScene();
+            return;
+        }
         controller.controlled_.attack();
         break;
     case goog.events.KeyCodes.ZERO:
@@ -122,8 +128,8 @@ trolls.Controller.prototype.step = function(dt) {
     }
 
     // in %
-    // var THRESHOLD = 5;
-    // if (this.hud_.getMorale() < THRESHOLD) {
-    // 	this.endScene();
-    // }
+    var THRESHOLD = 5;
+    if (this.hud_.getMorale() < THRESHOLD) {
+        this.scene_.addEndButton();
+    }
 };

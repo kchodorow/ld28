@@ -18,38 +18,6 @@ trolls.Hud.prototype.getMorale = function() {
     return this.meter_.getMorale();
 };
 
-trolls.Hud.prototype.inquireAbout = function(power) {
-    var size = new goog.math.Size(500, 300);
-    var dialog = new lime.Sprite().setSize(size)
-	.setFill(trolls.resources.getDialogBg())
-	.setPosition(0, HEIGHT/2-size.height/2)
-	.setStroke(2, trolls.resources.DARK_GREEN);
-    var label = lib.label(
-	'Would you like this troll to acquire the power: '+power.name)
-	.setSize(size.width-40, size.height-40);
-    dialog.appendChild(label);
-
-    var yes = new lime.Sprite().setSize(50, 30).setStroke(1, '#000')
-	.setPosition(-50, 50);
-    yes.appendChild(lib.label('Yes'));
-    goog.events.listen(yes, ['mousedown', 'touchstart'], function(e) {
-	// TODO: nice sparkle animation for this
-	trolls.controller.addPower(power);
-	dialog.getParent().removeChild(dialog);
-    });
-    dialog.appendChild(yes);
-
-    var no = new lime.Sprite().setSize(50, 30).setStroke(1, '#000')
-	.setPosition(50, 50);
-    no.appendChild(lib.label('No'));
-    goog.events.listen(no, ['mousedown', 'touchstart'], function(e) {
-	dialog.getParent().removeChild(dialog);
-    });
-    dialog.appendChild(no);
-
-    this.appendChild(dialog);
-};
-
 trolls.MoraleMeter = function() {
     lime.RoundedRect.call(this);
 
@@ -83,7 +51,7 @@ trolls.MoraleMeter.prototype.updateProgress = function(amount) {
 	this.current_ = this.max_;
     }
     this.inner_.setSize(
-	trolls.MoraleMeter.WIDTH*(this.current_/this.max_), 
+	trolls.MoraleMeter.WIDTH*(this.current_/this.max_),
 	trolls.MoraleMeter.HEIGHT);
 };
 

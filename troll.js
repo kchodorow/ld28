@@ -91,11 +91,7 @@ trolls.Troll.prototype.smashed_ = function(target) {
     }
 
     if (target.isA('powerup')) {
-        if (target.inquire) {
-            controller.hud_.inquireAbout(target);
-        } else {
-            target.attachTo(this);
-        }
+        target.inquireAbout(this.getScene());
     } else {
         target.changeHealth(-trolls.Troll.BASE_ATTACK+this.attack_);
     }

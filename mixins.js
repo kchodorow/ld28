@@ -220,8 +220,8 @@ trolls.Health.prototype.changeHealth = function(amount) {
         this.health_ = this.max_health_;
     } else if (this.health_ <= 0) {
         this.health_ = 0;
-        this.change_cb_();
     }
+    this.change_cb_();
 };
 
 trolls.Health.prototype.isDead = function() {

@@ -78,3 +78,25 @@ trolls.scenes.Main.prototype.maybeAddPowerUp_ = function(pos) {
     this.layer_.appendChild(power.setPosition(pos));
     trolls.map.add(power);
 };
+
+trolls.scenes.Main.prototype.addEndButton = function() {
+    var button_label = lib.label("Press <Enter> to finish rampage  \u2192");
+    var button_size = button_label.getFrame().size().scale(1.05, 1.2);
+    var button_sprite = new lime.RoundedRect()
+            .setSize(button_size)
+            .setFill(trolls.resources.YELLOW)
+            .setStroke(3, trolls.resources.DARK_GREEN)
+            .setPosition(212, 219);
+    button_sprite.appendChild(button_label);
+    lib.Debug.attach(button_sprite);
+    goog.object.extend(button_sprite, new lib.Selectable());
+    button_sprite.selectable_.selectCallback.color = trolls.resources.YELLOW;
+    button_sprite.select();
+
+    button_sprite.listen(['mouseclick', 'touchstart'], function() {
+        trolls.controller.endScene();
+    });
+
+    this.layer_.appendChild(button_sprite);
+    controller.ending_ = true;
+};
